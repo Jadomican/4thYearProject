@@ -1,9 +1,18 @@
+/*
+ * Jason Domican
+ * Institute of Technology Tallaght - 4th Year Project
+ */
+
 package jadomican.a4thyearproject;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
+
+/*
+ * Base class used for initialisation of global state before the first activity is displayed
+ */
 
 public class Application extends MultiDexApplication {
     @Override

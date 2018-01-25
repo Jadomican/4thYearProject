@@ -22,7 +22,6 @@ android {
 }
 
 
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -39,5 +38,7 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-auth-ui:2.6.+@aar'
     compile 'com.amazonaws:aws-android-sdk-auth-userpools:2.6.+@aar'
     compile 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.6.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb:2.6.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.6.+'
     compile 'com.amazonaws:aws-android-sdk-pinpoint:2.6.+'
 }
