@@ -6,7 +6,7 @@ buildscript {
         google()
 
         // Must specify http (not https) to bypass college proxy!
-        jcenter({ url "http://jcenter.bintray.com" })    }
+        jcenter()    }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
         
@@ -19,7 +19,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter({ url "http://jcenter.bintray.com" })    }
+        jcenter()    }
 }
 
 task clean(type: Delete) {
