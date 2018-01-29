@@ -109,6 +109,7 @@ public class UserDetailsContentContract {
          */
         public static final String[] PROJECTION_ALL = {
                 _ID,
+                ADDEDMEDICINES,
                 AGE,
                 BIO,
                 FIRSTNAME,

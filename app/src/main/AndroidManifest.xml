@@ -33,7 +33,14 @@
             android:name=".MainActivity"
             android:label="@string/title_home"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".UserDetailActivity"></activity>
+
+        <activity
+            android:name=".UserDetailActivity"
+            android:label="@string/title_user_detail"
+            android:parentActivityName=".UserDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
     </application>
 
 </manifest>
