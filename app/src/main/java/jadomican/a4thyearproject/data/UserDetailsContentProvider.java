@@ -9,7 +9,8 @@ import android.content.ContentProvider;
         import android.content.ContentValues;
         import android.content.UriMatcher;
         import android.database.Cursor;
-        import android.database.SQLException;
+import android.database.MatrixCursor;
+import android.database.SQLException;
         import android.database.sqlite.SQLiteDatabase;
         import android.database.sqlite.SQLiteQueryBuilder;
         import android.net.Uri;
@@ -17,7 +18,12 @@ import android.content.ContentProvider;
         import android.support.annotation.Nullable;
         import android.text.TextUtils;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
+
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -89,28 +95,67 @@ public class UserDetailsContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         int uriType = sUriMatcher.match(uri);
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+        DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
+        MatrixCursor cursor = new MatrixCursor(UserDetailsContentContract.UserDetails.PROJECTION_ALL);
+        String userId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
 
         switch (uriType) {
             case ALL_ITEMS:
-                queryBuilder.setTables(UserDetailsContentContract.UserDetails.TABLE_NAME);
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = UserDetailsContentContract.UserDetails.SORT_ORDER_DEFAULT;
+                // In this (simplified) version of a content provider, we only allow searching
+                // for all records that the user owns.  The first step to this is establishing
+                // a template record that has the partition key pre-populated.
+                UserDetailsDO template = new UserDetailsDO();
+                template.setUserId(userId);
+                // Now create a query expression that is based on the template record.
+                DynamoDBQueryExpression<UserDetailsDO> queryExpression;
+                queryExpression = new DynamoDBQueryExpression<UserDetailsDO>()
+                        .withHashKeyValues(template);
+                // Finally, do the query with that query expression.
+                List<UserDetailsDO> result = dbMapper.query(UserDetailsDO.class, queryExpression);
+                Iterator<UserDetailsDO> iterator = result.iterator();
+                while (iterator.hasNext()) {
+                    final UserDetailsDO userDetail = iterator.next();
+                    Object[] columnValues = fromUserDetailsDO(userDetail);
+                    cursor.addRow(columnValues);
                 }
+
                 break;
             case ONE_ITEM:
-                String where = getOneItemClause(uri.getLastPathSegment());
-                queryBuilder.setTables(UserDetailsContentContract.UserDetails.TABLE_NAME);
-                queryBuilder.appendWhere(where);
+                // In this (simplified) version of a content provider, we only allow searching
+                // for the specific record that was requested
+                final UserDetailsDO note = dbMapper.load(UserDetailsDO.class, userId, uri.getLastPathSegment());
+                if (note != null) {
+                    Object[] columnValues = fromUserDetailsDO(note);
+                    cursor.addRow(columnValues);
+                }
                 break;
         }
 
-        Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
+    private Object[] fromUserDetailsDO(UserDetailsDO userDetail) {
+        String[] fields = UserDetailsContentContract.UserDetails.PROJECTION_ALL;
+        Object[] r = new Object[fields.length];
+        for (int i = 0 ; i < fields.length ; i++) {
+            if (fields[i].equals(UserDetailsContentContract.UserDetails.ADDEDMEDICINES)) {
+                r[i] = userDetail.getAddedMedicines();
+            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.AGE)) {
+                r[i] = userDetail.getAge();
+            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.BIO)) {
+                r[i] = userDetail.getBio();
+            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.FIRSTNAME)) {
+                r[i] = userDetail.getFirstName();
+            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.LASTNAME)) {
+                r[i] = userDetail.getLastName();
+            } else {
+                r[i] = new Integer(0);
+            }
+        }
+        return r;
+    }
     /**
      * The content provider must return the content type for its supported URIs.  The supported
      * URIs are defined in the UriMatcher and the types are stored in the NotesContentContract.
@@ -144,20 +189,19 @@ public class UserDetailsContentProvider extends ContentProvider {
         int uriType = sUriMatcher.match(uri);
         switch (uriType) {
             case ALL_ITEMS:
-                SQLiteDatabase db = databaseHelper.getWritableDatabase();
-                long id = db.insert(UserDetailsContentContract.UserDetails.TABLE_NAME, null, values);
-                if (id > 0) {
-                    String noteId = values.getAsString(UserDetailsContentContract.UserDetails._ID);
-                    Uri item = UserDetailsContentContract.UserDetails.uriBuilder(noteId);
-                    notifyAllListeners(item);
-                    return item;
-                }
-                throw new SQLException(String.format(Locale.US, "Error inserting for URI %s - id = %d", uri, id));
+                DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
+                final UserDetailsDO newUserDetail = toUserDetailsDO(values);
+                dbMapper.save(newUserDetail);
+                Uri item = new Uri.Builder()
+                        .appendPath(UserDetailsContentContract.CONTENT_URI.toString())
+                        .appendPath(newUserDetail.getUserId())
+                        .build();
+                notifyAllListeners(item);
+                return item;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
     }
-
     /**
      * Delete one or more records from the SQLite database.
      *
@@ -170,21 +214,15 @@ public class UserDetailsContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int uriType = sUriMatcher.match(uri);
         int rows;
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
         switch (uriType) {
-            case ALL_ITEMS:
-                rows = db.delete(
-                        UserDetailsContentContract.UserDetails.TABLE_NAME,  // The table name
-                        selection, selectionArgs);              // The WHERE clause
-                break;
             case ONE_ITEM:
-                String where = getOneItemClause(uri.getLastPathSegment());
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                rows = db.delete(
-                        UserDetailsContentContract.UserDetails.TABLE_NAME,  // The table name
-                        where, selectionArgs);                  // The WHERE clause
+                DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
+                final UserDetailsDO userDetail = new UserDetailsDO();
+                userDetail.setUserId(uri.getLastPathSegment());
+                userDetail.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
+                dbMapper.delete(userDetail);
+                rows = 1;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -194,7 +232,6 @@ public class UserDetailsContentProvider extends ContentProvider {
         }
         return rows;
     }
-
     /**
      * Part of the ContentProvider implementation.  Updates the record (based on the record URI)
      * with the specified ContentValues
@@ -209,23 +246,13 @@ public class UserDetailsContentProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int uriType = sUriMatcher.match(uri);
         int rows;
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
         switch (uriType) {
-            case ALL_ITEMS:
-                rows = db.update(
-                        UserDetailsContentContract.UserDetails.TABLE_NAME,  // The table name
-                        values,                                 // The values to replace
-                        selection, selectionArgs);              // The WHERE clause
-                break;
             case ONE_ITEM:
-                String where = getOneItemClause(uri.getLastPathSegment());
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                rows = db.update(
-                        UserDetailsContentContract.UserDetails.TABLE_NAME,  // The table name
-                        values,                                 // The values to replace
-                        where, selectionArgs);                  // The WHERE clause
+                DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
+                final UserDetailsDO updatedUserDetail = toUserDetailsDO(values);
+                dbMapper.save(updatedUserDetail);
+                rows = 1;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -235,7 +262,6 @@ public class UserDetailsContentProvider extends ContentProvider {
         }
         return rows;
     }
-
 
     private UserDetailsDO toUserDetailsDO(ContentValues values) {
         final UserDetailsDO note = new UserDetailsDO();
