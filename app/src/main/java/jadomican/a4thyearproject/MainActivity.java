@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the floating action button
         editDetailsButton = (FloatingActionButton) findViewById(R.id.editDetailsButton);
+        editDetailsButton.setImageResource(android.R.drawable.ic_menu_edit );
         editDetailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
