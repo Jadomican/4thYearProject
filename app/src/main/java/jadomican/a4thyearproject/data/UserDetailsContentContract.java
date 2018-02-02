@@ -26,7 +26,7 @@ public class UserDetailsContentContract {
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     /**
-     * Constants for the Notes table
+     * Constants for the User Details table
      */
     public static final class UserDetails implements BaseColumns {
         /**
@@ -67,12 +67,12 @@ public class UserDetailsContentContract {
         /**
          * The directory base-path
          */
-        public static final String DIR_BASEPATH = "notes";
+        public static final String DIR_BASEPATH = "user-details";
 
         /**
          * The items base-path
          */
-        public static final String ITEM_BASEPATH = "notes/*";
+        public static final String ITEM_BASEPATH = "user-details/*";
 
         /**
          * The SQLite database command to create the table
@@ -96,14 +96,14 @@ public class UserDetailsContentContract {
          * The mime type of a directory of items
          */
         public static final String CONTENT_DIR_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.com.amazonaws.mobile.samples.notes";
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.jadomican.a4thyearproject";
 
         /**
          * The mime type of a single item
          */
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.com.amazonaws.mobile.samples.notes";
-
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.jadomican.a4thyearproject";
+        //"/vnd.com.amazonaws.mobile.samples.notes";
         /**
          * A projection of all columns in the items table
          */
@@ -122,9 +122,9 @@ public class UserDetailsContentContract {
         public static final String SORT_ORDER_DEFAULT = CREATED + " ASC";
 
         /**
-         * Build a URI for the provided note
-         * @param noteId the ID of the provided note
-         * @return the URI of the provided note
+         * Build a URI for the provided details
+         * @param noteId the ID of the provided details
+         * @return the URI of the provided details
          */
         public static Uri uriBuilder(String noteId) {
             Uri item = new Uri.Builder()
