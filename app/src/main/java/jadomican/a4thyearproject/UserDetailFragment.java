@@ -161,7 +161,7 @@ public class UserDetailFragment extends Fragment {
      * Returns the current note.
      * @return the current data
      */
-    public UserDetail getNote() {
+    public UserDetail getUserDetails() {
         return mItem;
     }
 

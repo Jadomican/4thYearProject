@@ -43,7 +43,7 @@ public class UserDetailActivity extends AppCompatActivity {
             fragment.setArguments(arguments);
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.note_detail_container, fragment)
+                    .add(R.id.user_detail_container, fragment)
                     .commit();
         }
     }

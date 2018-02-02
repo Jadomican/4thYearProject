@@ -124,9 +124,9 @@ public class UserDetailsContentProvider extends ContentProvider {
             case ONE_ITEM:
                 // In this (simplified) version of a content provider, we only allow searching
                 // for the specific record that was requested
-                final UserDetailsDO note = dbMapper.load(UserDetailsDO.class, userId, uri.getLastPathSegment());
-                if (note != null) {
-                    Object[] columnValues = fromUserDetailsDO(note);
+                final UserDetailsDO userDetails = dbMapper.load(UserDetailsDO.class, userId, uri.getLastPathSegment());
+                if (userDetails != null) {
+                    Object[] columnValues = fromUserDetailsDO(userDetails);
                     cursor.addRow(columnValues);
                 }
                 break;
@@ -264,18 +264,18 @@ public class UserDetailsContentProvider extends ContentProvider {
     }
 
     private UserDetailsDO toUserDetailsDO(ContentValues values) {
-        final UserDetailsDO note = new UserDetailsDO();
+        final UserDetailsDO userDetail = new UserDetailsDO();
 
         //MUST BE FIXED
         Map<String, String> test = new HashMap<>();
-        note.setAddedMedicines(test);
+        userDetail.setAddedMedicines(test);
 
-        note.setAge(values.getAsDouble(UserDetailsContentContract.UserDetails.AGE));
-        note.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
-        note.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
-        note.setLastName(values.getAsString(UserDetailsContentContract.UserDetails.LASTNAME));
-        note.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
-        return note;
+        userDetail.setAge(values.getAsDouble(UserDetailsContentContract.UserDetails.AGE));
+        userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
+        userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
+        userDetail.setLastName(values.getAsString(UserDetailsContentContract.UserDetails.LASTNAME));
+        userDetail.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
+        return userDetail;
     }
 
 
