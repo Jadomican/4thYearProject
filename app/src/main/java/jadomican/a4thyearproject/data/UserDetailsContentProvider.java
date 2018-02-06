@@ -105,18 +105,18 @@ public class UserDetailsContentProvider extends ContentProvider {
                 // In this (simplified) version of a content provider, we only allow searching
                 // for all records that the user owns.  The first step to this is establishing
                 // a template record that has the partition key pre-populated.
-                UserDetailsDO template = new UserDetailsDO();
+                UserDetailDO template = new UserDetailDO();
                 template.setUserId(userId);
                 // Now create a query expression that is based on the template record.
-                DynamoDBQueryExpression<UserDetailsDO> queryExpression;
-                queryExpression = new DynamoDBQueryExpression<UserDetailsDO>()
+                DynamoDBQueryExpression<UserDetailDO> queryExpression;
+                queryExpression = new DynamoDBQueryExpression<UserDetailDO>()
                         .withHashKeyValues(template);
                 // Finally, do the query with that query expression.
-                List<UserDetailsDO> result = dbMapper.query(UserDetailsDO.class, queryExpression);
-                Iterator<UserDetailsDO> iterator = result.iterator();
+                List<UserDetailDO> result = dbMapper.query(UserDetailDO.class, queryExpression);
+                Iterator<UserDetailDO> iterator = result.iterator();
                 while (iterator.hasNext()) {
-                    final UserDetailsDO userDetail = iterator.next();
-                    Object[] columnValues = fromUserDetailsDO(userDetail);
+                    final UserDetailDO userDetail = iterator.next();
+                    Object[] columnValues = fromUserDetailDO(userDetail);
                     cursor.addRow(columnValues);
                 }
 
@@ -124,9 +124,9 @@ public class UserDetailsContentProvider extends ContentProvider {
             case ONE_ITEM:
                 // In this (simplified) version of a content provider, we only allow searching
                 // for the specific record that was requested
-                final UserDetailsDO userDetails = dbMapper.load(UserDetailsDO.class, userId, uri.getLastPathSegment());
+                final UserDetailDO userDetails = dbMapper.load(UserDetailDO.class, userId, uri.getLastPathSegment());
                 if (userDetails != null) {
-                    Object[] columnValues = fromUserDetailsDO(userDetails);
+                    Object[] columnValues = fromUserDetailDO(userDetails);
                     cursor.addRow(columnValues);
                 }
                 break;
@@ -136,7 +136,7 @@ public class UserDetailsContentProvider extends ContentProvider {
         return cursor;
     }
 
-    private Object[] fromUserDetailsDO(UserDetailsDO userDetail) {
+    private Object[] fromUserDetailDO(UserDetailDO userDetail) {
         String[] fields = UserDetailsContentContract.UserDetails.PROJECTION_ALL;
         Object[] r = new Object[fields.length];
         for (int i = 0 ; i < fields.length ; i++) {
@@ -150,6 +150,8 @@ public class UserDetailsContentProvider extends ContentProvider {
                 r[i] = userDetail.getFirstName();
             } else if (fields[i].equals(UserDetailsContentContract.UserDetails.LASTNAME)) {
                 r[i] = userDetail.getLastName();
+            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.PROFILEID)) {
+                r[i] = userDetail.getProfileId();
             } else {
                 r[i] = new Integer(0);
             }
@@ -190,11 +192,11 @@ public class UserDetailsContentProvider extends ContentProvider {
         switch (uriType) {
             case ALL_ITEMS:
                 DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
-                final UserDetailsDO newUserDetail = toUserDetailsDO(values);
+                final UserDetailDO newUserDetail = toUserDetailDO(values);
                 dbMapper.save(newUserDetail);
                 Uri item = new Uri.Builder()
                         .appendPath(UserDetailsContentContract.CONTENT_URI.toString())
-                        .appendPath(newUserDetail.getUserId())
+                        .appendPath(newUserDetail.getProfileId())
                         .build();
                 notifyAllListeners(item);
                 return item;
@@ -218,8 +220,8 @@ public class UserDetailsContentProvider extends ContentProvider {
         switch (uriType) {
             case ONE_ITEM:
                 DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
-                final UserDetailsDO userDetail = new UserDetailsDO();
-                userDetail.setUserId(uri.getLastPathSegment());
+                final UserDetailDO userDetail = new UserDetailDO();
+                userDetail.setProfileId(uri.getLastPathSegment());
                 userDetail.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
                 dbMapper.delete(userDetail);
                 rows = 1;
@@ -250,7 +252,7 @@ public class UserDetailsContentProvider extends ContentProvider {
         switch (uriType) {
             case ONE_ITEM:
                 DynamoDBMapper dbMapper = AWSProvider.getInstance().getDynamoDBMapper();
-                final UserDetailsDO updatedUserDetail = toUserDetailsDO(values);
+                final UserDetailDO updatedUserDetail = toUserDetailDO(values);
                 dbMapper.save(updatedUserDetail);
                 rows = 1;
                 break;
@@ -263,8 +265,8 @@ public class UserDetailsContentProvider extends ContentProvider {
         return rows;
     }
 
-    private UserDetailsDO toUserDetailsDO(ContentValues values) {
-        final UserDetailsDO userDetail = new UserDetailsDO();
+    private UserDetailDO toUserDetailDO(ContentValues values) {
+        final UserDetailDO userDetail = new UserDetailDO();
 
         //MUST BE FIXED
         Map<String, String> test = new HashMap<>();
@@ -274,6 +276,7 @@ public class UserDetailsContentProvider extends ContentProvider {
         userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
         userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
         userDetail.setLastName(values.getAsString(UserDetailsContentContract.UserDetails.LASTNAME));
+        userDetail.setProfileId(values.getAsString(UserDetailsContentContract.UserDetails.PROFILEID));
         userDetail.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
         return userDetail;
     }

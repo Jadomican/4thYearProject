@@ -40,7 +40,12 @@ public class UserDetailsContentContract {
         public static final String _ID = "id";
 
         /**
-         * The noteId field
+         * The profileId field
+         */
+        public static final String PROFILEID = "profileId";
+
+        /**
+         * The addedMedicines field
          */
         public static final String ADDEDMEDICINES = "addedMedicines";
 
@@ -80,11 +85,12 @@ public class UserDetailsContentContract {
         public static final String CREATE_SQLITE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + "("
                         + _ID + " INTEGER PRIMARY KEY, "
+                        + PROFILEID + " TEXT UNIQUE NOT NULL, "
                         + ADDEDMEDICINES + " TEXT UNIQUE NOT NULL, "
-                        + AGE + " INTEGER NOT NULL DEFAULT '', "
+                        + AGE + " INTEGER NOT NULL DEFAULT 0, "
                         + BIO + " TEXT NOT NULL DEFAULT '', "
-                        + FIRSTNAME + " TEXT NOT NULL DEFAULT, "
-                        + LASTNAME + " TEXT NOT NULL DEFAULT)";
+                        + FIRSTNAME + " TEXT NOT NULL DEFAULT '', "
+                        + LASTNAME + " TEXT NOT NULL DEFAULT '')";
 
         /**
          * The content URI for this table
@@ -109,6 +115,7 @@ public class UserDetailsContentContract {
          */
         public static final String[] PROJECTION_ALL = {
                 _ID,
+                PROFILEID,
                 ADDEDMEDICINES,
                 AGE,
                 BIO,
@@ -123,15 +130,15 @@ public class UserDetailsContentContract {
 
         /**
          * Build a URI for the provided details
-         * @param noteId the ID of the provided details
+         * @param profileId the ID of the provided details
          * @return the URI of the provided details
          */
-        public static Uri uriBuilder(String noteId) {
+        public static Uri uriBuilder(String profileId) {
             Uri item = new Uri.Builder()
                     .scheme("content")
                     .authority(UserDetailsContentContract.AUTHORITY)
                     .appendPath(UserDetailsContentContract.UserDetails.DIR_BASEPATH)
-                    .appendPath(noteId)
+                    .appendPath(profileId)
                     .build();
             return item;
         }

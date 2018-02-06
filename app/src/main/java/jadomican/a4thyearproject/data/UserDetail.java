@@ -24,6 +24,7 @@ import java.util.UUID;
 
 public class UserDetail {
     private long id = -1;
+    private String profileId;
     //private Map<String, String> addedMedicines;
     private String addedMedicines;
     //private Double age;
@@ -44,6 +45,7 @@ public class UserDetail {
         UserDetail userDetail = new UserDetail();
 
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
+        userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
         userDetail.setAge(UserDetailsContentContract.UserDetails.AGE);
         userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
         userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
@@ -88,7 +90,7 @@ public class UserDetail {
      * Create a new blank note
      */
     public UserDetail() {
-        //setNoteId(UUID.randomUUID().toString());
+        setProfileId(UUID.randomUUID().toString());
         setAge("");
         setBio("");
         setFirstName("");
@@ -111,16 +113,16 @@ public class UserDetail {
 /*    *//**
      * Returns the noteId
      * @return the note ID
-     *//*
-    public String getNoteId() { return noteId; }
+     */
+    public String getProfileId() { return profileId; }
 
-    *//**
+    /*
      * Sets the noteId
      * @param noteId the new note ID
-     *//*
-    public void setNoteId(String noteId) {
-        this.noteId = noteId;
-    }*/
+     */
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
+    }
 
     /**
      * Returns the age
@@ -195,7 +197,7 @@ public class UserDetail {
      */
     @Override
     public String toString() {
-        return String.format("[note#%s] %s"/*, noteId, title*/);
+        return String.format("[note#%s] %s", profileId, bio);
     }
 
     /**
@@ -205,6 +207,7 @@ public class UserDetail {
     public ContentValues toContentValues() {
         ContentValues values = new ContentValues();
 
+        values.put(UserDetailsContentContract.UserDetails.PROFILEID, profileId);
         values.put(UserDetailsContentContract.UserDetails.ADDEDMEDICINES, addedMedicines);
         values.put(UserDetailsContentContract.UserDetails.AGE, age);
         values.put(UserDetailsContentContract.UserDetails.BIO, bio);

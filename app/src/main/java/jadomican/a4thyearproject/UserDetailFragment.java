@@ -4,6 +4,7 @@ package jadomican.a4thyearproject;
  * Created by jadom_000 on 27/01/2018.
  */
 
+        import android.content.AsyncQueryHandler;
         import android.content.ContentResolver;
         import android.content.ContentValues;
         import android.database.Cursor;
@@ -32,7 +33,7 @@ public class UserDetailFragment extends Fragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "noteId";
+    public static final String ARG_ITEM_ID = "profileId";
 
     /**
      * The dummy content this fragment is presenting.
@@ -55,6 +56,9 @@ public class UserDetailFragment extends Fragment {
      */
     EditText editAge;
     EditText editBio;
+    EditText editFirstName;
+    EditText editLastName;
+
 
     /**
      * The timer for saving the record back to SQL
@@ -89,24 +93,30 @@ public class UserDetailFragment extends Fragment {
         // Unbundle the arguments if any.  If there is an argument, load the data from
         // the content resolver aka the content provider.
         Bundle arguments = getArguments();
+        mItem = new UserDetail();
         if (arguments != null && arguments.containsKey(ARG_ITEM_ID)) {
             String itemId = getArguments().getString(ARG_ITEM_ID);
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
-            Cursor data = contentResolver.query(itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
-            if (data != null) {
-                data.moveToFirst();
-                mItem = UserDetail.fromCursor(data);
-                isUpdate = true;
-            }
+            AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
+                @Override
+                protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+                    super.onQueryComplete(token, cookie, cursor);
+                    cursor.moveToFirst();
+                    mItem = UserDetail.fromCursor(cursor);
+                    isUpdate = true;
+
+                    editAge.setText(mItem.getAge());
+                    editBio.setText(mItem.getBio());
+                }
+            };
+            //queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
         } else {
-            mItem = new UserDetail();
             isUpdate = false;
         }
 
         // Start the timer for the delayed start
         timer.postDelayed(timerTask, 5000);
     }
-
     /**
      * Lifecycle event handler - called when the fragment is paused.  Use this to do any
      * saving of data as it is the last opportunity to reliably do so.
@@ -132,11 +142,16 @@ public class UserDetailFragment extends Fragment {
             mItem.setBio(editBio.getText().toString().trim());
             isUpdated = true;
         }
+        if (!mItem.getFirstName().equals(editBio.getText().toString().trim())) {
+            mItem.setFirstName(editBio.getText().toString().trim());
+            isUpdated = true;
+        }
+        if (!mItem.getLastName().equals(editBio.getText().toString().trim())) {
+            mItem.setLastName(editBio.getText().toString().trim());
+            isUpdated = true;
+        }
 
-        /*
-        MORE HERE
 
-        */
         // Convert to ContentValues and store in the database.
         if (isUpdated) {
             ContentValues values = mItem.toContentValues();
@@ -150,8 +165,8 @@ public class UserDetailFragment extends Fragment {
                 final AnalyticsClient mgr = AWSProvider.getInstance()
                         .getPinpointManager()
                         .getAnalyticsClient();
-                final AnalyticsEvent evt = mgr.createEvent("AddNote")
-                        .withAttribute("bio", mItem.getBio());
+                final AnalyticsEvent evt = mgr.createEvent("AddProfile")
+                        .withAttribute("profileId", mItem.getProfileId());
                 mgr.recordEvent(evt);
                 mgr.submitEvents();            }
         }
@@ -171,11 +186,15 @@ public class UserDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.user_detail, container, false);
 
         // Update the text in the editor
-        editAge = (EditText) rootView.findViewById(R.id.edit_title);
-        editBio = (EditText) rootView.findViewById(R.id.edit_content);
+        editAge = (EditText) rootView.findViewById(R.id.edit_age);
+        editBio = (EditText) rootView.findViewById(R.id.edit_bio);
+        editFirstName = (EditText) rootView.findViewById(R.id.edit_first_name);
+        editLastName = (EditText) rootView.findViewById(R.id.edit_last_name);
 
         editAge.setText(mItem.getAge());
         editBio.setText(mItem.getBio());
+        editFirstName.setText(mItem.getFirstName());
+        editLastName.setText(mItem.getLastName());
 
         return rootView;
     }
