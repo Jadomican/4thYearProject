@@ -30,7 +30,7 @@ import java.util.Map;
 import jadomican.a4thyearproject.AWSProvider;
 
 /**
- * The Content Provider for the internal Notes database
+ * The Content Provider for the internal user-detail database
  */
 public class UserDetailsContentProvider extends ContentProvider {
     /**
@@ -39,12 +39,12 @@ public class UserDetailsContentProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     /**
-     * The code for the UriMatch matching all notes
+     * The code for the UriMatch matching all userDetails
      */
     private static final int ALL_ITEMS = 10;
 
     /**
-     * The code for the UriMatch matching a single note
+     * The code for the UriMatch matching a single userDetail
      */
     private static final int ONE_ITEM = 20;
 
@@ -160,7 +160,7 @@ public class UserDetailsContentProvider extends ContentProvider {
     }
     /**
      * The content provider must return the content type for its supported URIs.  The supported
-     * URIs are defined in the UriMatcher and the types are stored in the NotesContentContract.
+     * URIs are defined in the UriMatcher and the types are stored in the UserDetailsContentContract.
      *
      * @param uri the URI for typing
      * @return the type of the URI

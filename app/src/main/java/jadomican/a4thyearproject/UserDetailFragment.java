@@ -12,6 +12,7 @@ package jadomican.a4thyearproject;
         import android.os.Handler;
         import android.os.Bundle;
         import android.support.v4.app.Fragment;
+        import android.util.Log;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
@@ -23,9 +24,9 @@ package jadomican.a4thyearproject;
         import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsEvent;
 
 /**
- * A fragment representing a single Note detail screen.
- * This fragment is either contained in a { NoteListActivity}
- * in two-pane mode (on tablets) or a { NoteDetailActivity}
+ * A fragment representing a single Profile detail screen.
+ * This fragment is either contained in a { ListActivity}
+ * in two-pane mode (on tablets) or a { UserDetailActivity}
  * on handsets.
  */
 public class UserDetailFragment extends Fragment {
@@ -83,6 +84,11 @@ public class UserDetailFragment extends Fragment {
      * Lifecycle event handler - called when the fragment is created.
      * @param savedInstanceState the saved state
      */
+// Constants used for async data operations
+    private static final int QUERY_TOKEN = 1001;
+    private static final int UPDATE_TOKEN = 1002;
+    private static final int INSERT_TOKEN = 1003;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +103,9 @@ public class UserDetailFragment extends Fragment {
         if (arguments != null && arguments.containsKey(ARG_ITEM_ID)) {
             String itemId = getArguments().getString(ARG_ITEM_ID);
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
+
+
+            // Replace local cursor methods with async query handling
             AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
                 @Override
                 protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
@@ -107,9 +116,13 @@ public class UserDetailFragment extends Fragment {
 
                     editAge.setText(mItem.getAge());
                     editBio.setText(mItem.getBio());
+                    editFirstName.setText(mItem.getFirstName());
+                    editLastName.setText(mItem.getLastName());
                 }
             };
-            //queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
+            queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails  .PROJECTION_ALL, null, null, null);
+
+
         } else {
             isUpdate = false;
         }
@@ -117,6 +130,8 @@ public class UserDetailFragment extends Fragment {
         // Start the timer for the delayed start
         timer.postDelayed(timerTask, 5000);
     }
+
+
     /**
      * Lifecycle event handler - called when the fragment is paused.  Use this to do any
      * saving of data as it is the last opportunity to reliably do so.
@@ -155,10 +170,24 @@ public class UserDetailFragment extends Fragment {
         // Convert to ContentValues and store in the database.
         if (isUpdated) {
             ContentValues values = mItem.toContentValues();
+
+            AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
+                @Override
+                protected void onInsertComplete(int token, Object cookie, Uri uri) {
+                    super.onInsertComplete(token, cookie, uri);
+                    Log.d("UserDetailFragment", "insert completed");
+                }
+
+                @Override
+                protected void onUpdateComplete(int token, Object cookie, int result) {
+                    super.onUpdateComplete(token, cookie, result);
+                    Log.d("UserDetailFragment", "update completed");
+                }
+            };
             if (isUpdate) {
-                contentResolver.update(itemUri, values, null, null);
+                queryHandler.startUpdate(UPDATE_TOKEN, null, itemUri, values, null, null);
             } else {
-                itemUri = contentResolver.insert(UserDetailsContentContract.UserDetails.CONTENT_URI, values);
+                queryHandler.startInsert(INSERT_TOKEN, null, UserDetailsContentContract.UserDetails.CONTENT_URI, values);
                 isUpdate = true;    // Anything from now on is an update
 
                 // Send Custom Event to Amazon Pinpoint
@@ -168,12 +197,15 @@ public class UserDetailFragment extends Fragment {
                 final AnalyticsEvent evt = mgr.createEvent("AddProfile")
                         .withAttribute("profileId", mItem.getProfileId());
                 mgr.recordEvent(evt);
-                mgr.submitEvents();            }
+                mgr.submitEvents();
+            }
+
+
         }
     }
 
     /**
-     * Returns the current note.
+     * Returns the current profile.
      * @return the current data
      */
     public UserDetail getUserDetails() {

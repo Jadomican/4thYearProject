@@ -4,10 +4,37 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/note_detail"
+    android:id="@+id/user_detail"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     tools:context=".UserDetailFragment">
+
+    <EditText
+        android:id="@+id/edit_first_name"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:hint="First Name"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="?attr/editTextColor"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp" />
+
+    <EditText
+        android:id="@+id/edit_last_name"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:hint="Surname"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_first_name"
+        android:layout_marginStart="8dp" />
 
     <EditText
         android:id="@+id/edit_age"
@@ -16,12 +43,9 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:hint="Age"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="?attr/editTextColor"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_last_name"
         android:layout_marginStart="8dp" />
 
     <EditText
@@ -34,29 +58,5 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_age"
-        android:layout_marginStart="8dp" />
-
-    <EditText
-        android:id="@+id/edit_first_name"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:hint="Bio"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_bio"
-        android:layout_marginStart="8dp" />
-
-    <EditText
-        android:id="@+id/edit_last_name"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:hint="Bio"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_first_name"
         android:layout_marginStart="8dp" />
 </android.support.constraint.ConstraintLayout>

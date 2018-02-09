@@ -17,9 +17,8 @@ import java.util.UUID;
  * The User Profile model
  *
  * _id      The internal ID - only relevant to the current device
- * noteId   The global ID - should be unique globally
- * title    The note title
- * content  The note content
+ * profileId   The global ID - should be unique globally
+ * addedMedicines    The JSON-like document storing medicine details
  */
 
 public class UserDetail {

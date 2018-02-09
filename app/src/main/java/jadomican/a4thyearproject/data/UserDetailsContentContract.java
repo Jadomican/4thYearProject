@@ -15,13 +15,13 @@ package jadomican.a4thyearproject.data;
  */
 public class UserDetailsContentContract {
     /**
-     * The authority of the notes content provider - this must match the authority
+     * The authority of the user details content provider - this must match the authority
      * specified in the AndroidManifest.xml provider section
      */
     public static final String AUTHORITY = "jadomican.a4thyearproject.provider";
 
     /**
-     * The content URI for the top-level notes authority
+     * The content URI for the top-level userDetail authority
      */
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
@@ -32,7 +32,7 @@ public class UserDetailsContentContract {
         /**
          * The Table Name
          */
-        public static final String TABLE_NAME = "user-details";
+        public static final String TABLE_NAME = "user-detail";
 
         /**
          * The internal ID
@@ -72,12 +72,12 @@ public class UserDetailsContentContract {
         /**
          * The directory base-path
          */
-        public static final String DIR_BASEPATH = "user-details";
+        public static final String DIR_BASEPATH = "user-detail";
 
         /**
          * The items base-path
          */
-        public static final String ITEM_BASEPATH = "user-details/*";
+        public static final String ITEM_BASEPATH = "user-detail/*";
 
         /**
          * The SQLite database command to create the table
@@ -109,7 +109,7 @@ public class UserDetailsContentContract {
          */
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.jadomican.a4thyearproject";
-        //"/vnd.com.amazonaws.mobile.samples.notes";
+
         /**
          * A projection of all columns in the items table
          */

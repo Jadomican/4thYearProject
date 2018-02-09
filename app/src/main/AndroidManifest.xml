@@ -17,7 +17,8 @@
         <provider
             android:name=".data.UserDetailsContentProvider"
             android:authorities="jadomican.a4thyearproject.provider"
-            android:label="UserDetailsProvider" />
+            android:label="UserDetailsProvider">
+        </provider>
 
         <activity
             android:name=".AuthenticatorActivity"
