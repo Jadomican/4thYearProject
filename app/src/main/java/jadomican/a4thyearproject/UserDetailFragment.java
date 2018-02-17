@@ -55,8 +55,8 @@ public class UserDetailFragment extends Fragment {
     /**
      * The component bindings
      */
-    EditText editAge;
     EditText editBio;
+    EditText editDateOfBirth;
     EditText editFirstName;
     EditText editLastName;
 
@@ -114,14 +114,13 @@ public class UserDetailFragment extends Fragment {
                     mItem = UserDetail.fromCursor(cursor);
                     isUpdate = true;
 
-                    editAge.setText(mItem.getAge());
+                    editDateOfBirth.setText(mItem.getDateOfBirth());
                     editBio.setText(mItem.getBio());
                     editFirstName.setText(mItem.getFirstName());
                     editLastName.setText(mItem.getLastName());
                 }
             };
-            queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails  .PROJECTION_ALL, null, null, null);
-
+            queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
 
         } else {
             isUpdate = false;
@@ -149,20 +148,20 @@ public class UserDetailFragment extends Fragment {
     private void saveData() {
         // Save the edited text back to the item.
         boolean isUpdated = false;
-        if (!mItem.getAge().equals(editAge.getText().toString().trim())) {
-            mItem.setAge(editAge.getText().toString().trim());
+        if (!mItem.getDateOfBirth().equals(editDateOfBirth.getText().toString().trim())) {
+            mItem.setDateOfBirth(editDateOfBirth.getText().toString().trim());
             isUpdated = true;
         }
         if (!mItem.getBio().equals(editBio.getText().toString().trim())) {
             mItem.setBio(editBio.getText().toString().trim());
             isUpdated = true;
         }
-        if (!mItem.getFirstName().equals(editBio.getText().toString().trim())) {
-            mItem.setFirstName(editBio.getText().toString().trim());
+        if (!mItem.getFirstName().equals(editFirstName.getText().toString().trim())) {
+            mItem.setFirstName(editFirstName.getText().toString().trim());
             isUpdated = true;
         }
-        if (!mItem.getLastName().equals(editBio.getText().toString().trim())) {
-            mItem.setLastName(editBio.getText().toString().trim());
+        if (!mItem.getLastName().equals(editLastName.getText().toString().trim())) {
+            mItem.setLastName(editLastName.getText().toString().trim());
             isUpdated = true;
         }
 
@@ -185,10 +184,11 @@ public class UserDetailFragment extends Fragment {
                 }
             };
             if (isUpdate) {
+
                 queryHandler.startUpdate(UPDATE_TOKEN, null, itemUri, values, null, null);
             } else {
                 queryHandler.startInsert(INSERT_TOKEN, null, UserDetailsContentContract.UserDetails.CONTENT_URI, values);
-                isUpdate = true;    // Anything from now on is an update
+                //isUpdate = true;    // Anything from now on is an update
 
                 // Send Custom Event to Amazon Pinpoint
                 final AnalyticsClient mgr = AWSProvider.getInstance()
@@ -218,12 +218,12 @@ public class UserDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.user_detail, container, false);
 
         // Update the text in the editor
-        editAge = (EditText) rootView.findViewById(R.id.edit_age);
+        editDateOfBirth = (EditText) rootView.findViewById(R.id.edit_dob);
         editBio = (EditText) rootView.findViewById(R.id.edit_bio);
         editFirstName = (EditText) rootView.findViewById(R.id.edit_first_name);
         editLastName = (EditText) rootView.findViewById(R.id.edit_last_name);
 
-        editAge.setText(mItem.getAge());
+        editDateOfBirth.setText(mItem.getDateOfBirth());
         editBio.setText(mItem.getBio());
         editFirstName.setText(mItem.getFirstName());
         editLastName.setText(mItem.getLastName());

@@ -26,8 +26,7 @@ public class UserDetail {
     private String profileId;
     //private Map<String, String> addedMedicines;
     private String addedMedicines;
-    //private Double age;
-    private String age;
+    private String dateOfBirth;
     private String bio;
     private String firstName;
     private String lastName;
@@ -45,7 +44,7 @@ public class UserDetail {
 
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
         userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
-        userDetail.setAge(UserDetailsContentContract.UserDetails.AGE);
+        userDetail.setDateOfBirth(UserDetailsContentContract.UserDetails.DATEOFBIRTH);
         userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
         userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
         userDetail.setLastName(getString(c, UserDetailsContentContract.UserDetails.LASTNAME, ""));
@@ -86,11 +85,11 @@ public class UserDetail {
     }
 
     /**
-     * Create a new blank note
+     * Create a new blank profile object
      */
     public UserDetail() {
         setProfileId(UUID.randomUUID().toString());
-        setAge("");
+        setDateOfBirth("");
         setBio("");
         setFirstName("");
         setLastName("");
@@ -127,14 +126,14 @@ public class UserDetail {
      * Returns the age
      * @return the age
      */
-    public String getAge() { return age; }
+    public String getDateOfBirth() { return dateOfBirth; }
 
     /**
      * Sets the age
-     * @param age the new age
+     * @param dateOfBirth the new age
      */
-    public void setAge(String age) {
-        this.age = age;
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
 
@@ -182,12 +181,14 @@ public class UserDetail {
 
     /**
      * Updates the note
-     * @param age the new age
+     * @param dateOfBirth the new age
      * @param bio the new bio
      */
-    public void updateUserDetail(String age, String bio) {
-        setAge(age);
+    public void updateUserDetail(String dateOfBirth, String bio, String firstName, String lastName) {
+        setDateOfBirth(dateOfBirth);
         setBio(bio);
+        setFirstName(firstName);
+        setLastName(lastName);
     }
 
     /**
@@ -208,7 +209,7 @@ public class UserDetail {
 
         values.put(UserDetailsContentContract.UserDetails.PROFILEID, profileId);
         values.put(UserDetailsContentContract.UserDetails.ADDEDMEDICINES, addedMedicines);
-        values.put(UserDetailsContentContract.UserDetails.AGE, age);
+        values.put(UserDetailsContentContract.UserDetails.DATEOFBIRTH, dateOfBirth);
         values.put(UserDetailsContentContract.UserDetails.BIO, bio);
         values.put(UserDetailsContentContract.UserDetails.FIRSTNAME, firstName);
         values.put(UserDetailsContentContract.UserDetails.LASTNAME, lastName);

@@ -17,8 +17,8 @@ public class UserDetailDO {
     private String _userId;
     private String _profileId;
     private Map<String, String> _addedMedicines;
-    private Double _age;
     private String _bio;
+    private String _dateOfBirth;
     private String _firstName;
     private String _lastName;
 
@@ -48,14 +48,7 @@ public class UserDetailDO {
     public void setAddedMedicines(final Map<String, String> _addedMedicines) {
         this._addedMedicines = _addedMedicines;
     }
-    @DynamoDBAttribute(attributeName = "age")
-    public Double getAge() {
-        return _age;
-    }
 
-    public void setAge(final Double _age) {
-        this._age = _age;
-    }
     @DynamoDBAttribute(attributeName = "bio")
     public String getBio() {
         return _bio;
@@ -64,6 +57,16 @@ public class UserDetailDO {
     public void setBio(final String _bio) {
         this._bio = _bio;
     }
+
+    @DynamoDBAttribute(attributeName = "dateOfBirth")
+    public String getDateOfBirth() {
+        return _dateOfBirth;
+    }
+
+    public void setDateOfBirth(final String _dateOfBirth) {
+        this._dateOfBirth = _dateOfBirth;
+    }
+
     @DynamoDBIndexRangeKey(attributeName = "firstName", globalSecondaryIndexName = "userId-firstName")
     public String getFirstName() {
         return _firstName;

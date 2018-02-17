@@ -5,18 +5,18 @@ package jadomican.a4thyearproject.data;
  */
 
 import android.content.ContentProvider;
-        import android.content.ContentResolver;
-        import android.content.ContentValues;
-        import android.content.UriMatcher;
-        import android.database.Cursor;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.SQLException;
-        import android.database.sqlite.SQLiteDatabase;
-        import android.database.sqlite.SQLiteQueryBuilder;
-        import android.net.Uri;
-        import android.support.annotation.NonNull;
-        import android.support.annotation.Nullable;
-        import android.text.TextUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
@@ -142,8 +142,8 @@ public class UserDetailsContentProvider extends ContentProvider {
         for (int i = 0 ; i < fields.length ; i++) {
             if (fields[i].equals(UserDetailsContentContract.UserDetails.ADDEDMEDICINES)) {
                 r[i] = userDetail.getAddedMedicines();
-            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.AGE)) {
-                r[i] = userDetail.getAge();
+            } else if (fields[i].equals(UserDetailsContentContract.UserDetails.DATEOFBIRTH)) {
+                r[i] = userDetail.getDateOfBirth();
             } else if (fields[i].equals(UserDetailsContentContract.UserDetails.BIO)) {
                 r[i] = userDetail.getBio();
             } else if (fields[i].equals(UserDetailsContentContract.UserDetails.FIRSTNAME)) {
@@ -272,8 +272,8 @@ public class UserDetailsContentProvider extends ContentProvider {
         Map<String, String> test = new HashMap<>();
         userDetail.setAddedMedicines(test);
 
-        userDetail.setAge(values.getAsDouble(UserDetailsContentContract.UserDetails.AGE));
         userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
+        userDetail.setDateOfBirth(values.getAsString(UserDetailsContentContract.UserDetails.DATEOFBIRTH));
         userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
         userDetail.setLastName(values.getAsString(UserDetailsContentContract.UserDetails.LASTNAME));
         userDetail.setProfileId(values.getAsString(UserDetailsContentContract.UserDetails.PROFILEID));

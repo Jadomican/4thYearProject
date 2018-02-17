@@ -57,7 +57,7 @@ public class UserDetailsContentContract {
         /**
          * The content field
          */
-        public static final String AGE = "age";
+        public static final String DATEOFBIRTH = "dateOfBirth";
 
         /**
          * The created field
@@ -87,8 +87,8 @@ public class UserDetailsContentContract {
                         + _ID + " INTEGER PRIMARY KEY, "
                         + PROFILEID + " TEXT UNIQUE NOT NULL, "
                         + ADDEDMEDICINES + " TEXT UNIQUE NOT NULL, "
-                        + AGE + " INTEGER NOT NULL DEFAULT 0, "
                         + BIO + " TEXT NOT NULL DEFAULT '', "
+                        + DATEOFBIRTH + " TEXT NOT NULL DEFAULT '', "
                         + FIRSTNAME + " TEXT NOT NULL DEFAULT '', "
                         + LASTNAME + " TEXT NOT NULL DEFAULT '')";
 
@@ -117,8 +117,8 @@ public class UserDetailsContentContract {
                 _ID,
                 PROFILEID,
                 ADDEDMEDICINES,
-                AGE,
                 BIO,
+                DATEOFBIRTH,
                 FIRSTNAME,
                 LASTNAME,
         };
