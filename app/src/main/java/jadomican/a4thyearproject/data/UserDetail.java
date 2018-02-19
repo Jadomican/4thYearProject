@@ -13,6 +13,8 @@ import org.joda.time.DateTimeZone;
 import java.util.Map;
 import java.util.UUID;
 
+import jadomican.a4thyearproject.AWSProvider;
+
 /**
  * The User Profile model
  *
@@ -88,7 +90,7 @@ public class UserDetail {
      * Create a new blank profile object
      */
     public UserDetail() {
-        setProfileId(UUID.randomUUID().toString());
+        setProfileId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
         setDateOfBirth("");
         setBio("");
         setFirstName("");

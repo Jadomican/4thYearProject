@@ -200,7 +200,6 @@ public class UserDetailFragment extends Fragment {
                 mgr.submitEvents();
             }
 
-
         }
     }
 
