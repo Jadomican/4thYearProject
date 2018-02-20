@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToSearchMedicines(View view) {
         Context context = view.getContext();
-        Intent intent = new Intent(context, UserDetailActivity.class);
+        Intent intent = new Intent(context, MedicineListActivity.class);
         context.startActivity(intent);
     }
 
