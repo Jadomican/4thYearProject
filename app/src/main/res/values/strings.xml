@@ -2,5 +2,6 @@
     <string name="app_name">4thYearProject</string>
     <string name="title_home">Home</string>
     <string name="title_user_detail">User Details</string>
+    <string name="title_medicine_list">Medicine Search</string>
 
 </resources>

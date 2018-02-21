@@ -37,8 +37,11 @@
             android:name=".UserDetailActivity"
             android:label="@string/title_user_detail"
             android:parentActivityName=".UserDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".MedicineListActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".MedicineListActivity"
+            android:label="@string/title_medicine_list" >
+        </activity>
     </application>
 
 </manifest>
