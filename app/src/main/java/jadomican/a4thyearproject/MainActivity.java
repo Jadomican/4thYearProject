@@ -2,7 +2,6 @@ package jadomican.a4thyearproject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,8 +15,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToEditProfile(View view) {
+
+        Bundle arguments = new Bundle();
+        arguments.putString(UserDetailFragment.ARG_ITEM_ID, AWSProvider.getInstance().getIdentityManager().getCachedUserID());
         Context context = view.getContext();
         Intent intent = new Intent(context, UserDetailActivity.class);
+        intent.putExtras(arguments);
         context.startActivity(intent);
     }
 

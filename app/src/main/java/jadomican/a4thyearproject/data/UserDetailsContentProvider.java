@@ -270,8 +270,8 @@ public class UserDetailsContentProvider extends ContentProvider {
 
         //MUST BE FIXED
         Map<String, String> test = new HashMap<>();
-        userDetail.setAddedMedicines(test);
 
+        userDetail.setAddedMedicines(test);
         userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
         userDetail.setDateOfBirth(values.getAsString(UserDetailsContentContract.UserDetails.DATEOFBIRTH));
         userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));

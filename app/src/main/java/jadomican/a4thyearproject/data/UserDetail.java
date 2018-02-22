@@ -46,7 +46,7 @@ public class UserDetail {
 
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
         userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
-        userDetail.setDateOfBirth(UserDetailsContentContract.UserDetails.DATEOFBIRTH);
+        userDetail.setDateOfBirth(getString(c, UserDetailsContentContract.UserDetails.DATEOFBIRTH, ""));
         userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
         userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
         userDetail.setLastName(getString(c, UserDetailsContentContract.UserDetails.LASTNAME, ""));
@@ -171,7 +171,7 @@ public class UserDetail {
      * Returns the fname
      * @return the fname
      */
-    public String getLastName() { return firstName; }
+    public String getLastName() { return lastName; }
 
     /**
      * Sets the lname
