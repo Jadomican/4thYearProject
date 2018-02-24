@@ -86,7 +86,7 @@ public class UserDetailsContentContract {
                 "CREATE TABLE " + TABLE_NAME + "("
                         + _ID + " INTEGER PRIMARY KEY, "
                         + PROFILEID + " TEXT UNIQUE NOT NULL, "
-                        + ADDEDMEDICINES + " TEXT UNIQUE NOT NULL, "
+                        + ADDEDMEDICINES + " TEXT NOT NULL DEFAULT '', "
                         + BIO + " TEXT NOT NULL DEFAULT '', "
                         + DATEOFBIRTH + " TEXT NOT NULL DEFAULT '', "
                         + FIRSTNAME + " TEXT NOT NULL DEFAULT '', "

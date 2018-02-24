@@ -158,6 +158,44 @@ public class UserDetailsContentProvider extends ContentProvider {
         }
         return r;
     }
+
+    private UserDetailDO toUserDetailDO(ContentValues values) {
+        final UserDetailDO userDetail = new UserDetailDO();
+
+        /*
+        Map<String, String> medicineMap = new HashMap<String, String>();
+        String s = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
+        String[] pairs = s.split(",");
+        for (int i=0;i<pairs.length;i++) {
+            String pair = pairs[i];
+            String[] keyValue = pair.split(":");
+            medicineMap.put(keyValue[0], String.valueOf(keyValue[1]));
+        }
+        */
+
+        String value = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
+
+        value = value.substring(1, value.length()-1);           //remove curly brackets
+        String[] keyValuePairs = value.split(",");              //split the string to creat key-value pairs
+        Map<String,String> map = new HashMap<>();
+
+        for(String pair : keyValuePairs)                        //iterate over the pairs
+        {
+            String[] entry = pair.split("=");                   //split the pairs to get key and value
+            map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
+        }
+
+
+        userDetail.setAddedMedicines(map);
+        userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
+        userDetail.setDateOfBirth(values.getAsString(UserDetailsContentContract.UserDetails.DATEOFBIRTH));
+        userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
+        userDetail.setLastName(values.getAsString(UserDetailsContentContract.UserDetails.LASTNAME));
+        userDetail.setProfileId(values.getAsString(UserDetailsContentContract.UserDetails.PROFILEID));
+        userDetail.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
+        return userDetail;
+    }
+
     /**
      * The content provider must return the content type for its supported URIs.  The supported
      * URIs are defined in the UriMatcher and the types are stored in the UserDetailsContentContract.
@@ -264,23 +302,6 @@ public class UserDetailsContentProvider extends ContentProvider {
         }
         return rows;
     }
-
-    private UserDetailDO toUserDetailDO(ContentValues values) {
-        final UserDetailDO userDetail = new UserDetailDO();
-
-        //MUST BE FIXED
-        Map<String, String> test = new HashMap<>();
-
-        userDetail.setAddedMedicines(test);
-        userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
-        userDetail.setDateOfBirth(values.getAsString(UserDetailsContentContract.UserDetails.DATEOFBIRTH));
-        userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
-        userDetail.setLastName(values.getAsString(UserDetailsContentContract.UserDetails.LASTNAME));
-        userDetail.setProfileId(values.getAsString(UserDetailsContentContract.UserDetails.PROFILEID));
-        userDetail.setUserId(AWSProvider.getInstance().getIdentityManager().getCachedUserID());
-        return userDetail;
-    }
-
 
     /**
      * Notify all listeners that the specified URI has changed

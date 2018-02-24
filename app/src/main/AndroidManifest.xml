@@ -17,7 +17,7 @@
         <provider
             android:name=".data.UserDetailsContentProvider"
             android:authorities="jadomican.a4thyearproject.provider"
-            android:label="UserDetailsProvider"></provider>
+            android:label="UserDetailsProvider" />
 
         <activity
             android:name=".AuthenticatorActivity"
@@ -37,11 +37,11 @@
             android:name=".UserDetailActivity"
             android:label="@string/title_user_detail"
             android:parentActivityName=".UserDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity android:name=".MedicineListActivity"
-            android:label="@string/title_medicine_list" >
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".MedicineListActivity"
+            android:label="@string/title_medicine_list"></activity>
+        <activity android:name=".MedicineDetailsActivity"></activity>
     </application>
 
 </manifest>

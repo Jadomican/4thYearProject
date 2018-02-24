@@ -1,5 +1,6 @@
 package jadomican.a4thyearproject;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
@@ -24,10 +25,17 @@ import java.util.List;
 
 public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
 
-    public LoadJSONTask(Listener listener) {
+    public LoadJSONTask(Listener listener, MedicineListActivity activity) {
 
         mListener = listener;
+
+        //Display a progress bar to the user while the dataset is loading
+        //this.activity = activity;
+        dialog = new ProgressDialog(activity);
     }
+
+    private ProgressDialog dialog;
+    //private MedicineListActivity activity;
 
     //Utilising interfaces here to enforce use of the onLoaded() and onError() methods
     public interface Listener {
@@ -37,6 +45,12 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
     }
 
     private Listener mListener;
+
+    @Override
+    protected void onPreExecute() {
+        this.dialog.setMessage("Progress start");
+        this.dialog.show();
+    }
 
     @Override
     protected MedicineResponse doInBackground(String... strings) {
@@ -61,6 +75,10 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
             mListener.onLoaded(response.getMedicinesList());
         } else {
             mListener.onError();
+        }
+
+        if (dialog.isShowing()) {
+            dialog.dismiss();
         }
     }
 

@@ -7,9 +7,12 @@ package jadomican.a4thyearproject.data;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.marshallers.ObjectToMapMarshaller;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,8 +29,7 @@ import jadomican.a4thyearproject.AWSProvider;
 public class UserDetail {
     private long id = -1;
     private String profileId;
-    //private Map<String, String> addedMedicines;
-    private String addedMedicines;
+    private Map<String, String> addedMedicines = new HashMap<String, String>();
     private String dateOfBirth;
     private String bio;
     private String firstName;
@@ -46,6 +48,20 @@ public class UserDetail {
 
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
         userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
+
+        String value = getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "");
+
+        value = value.substring(1, value.length()-1);               //remove curly brackets
+        String[] keyValuePairs = value.split(",");            //split the string to create key-value pairs
+        Map<String,String> map = new HashMap<>();
+
+        for(String pair : keyValuePairs)                            //iterate over the pairs
+        {
+            String[] entry = pair.split("=");                   //split the pairs to get key and value
+            map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
+        }
+
+        userDetail.setAddedMedicines(map);
         userDetail.setDateOfBirth(getString(c, UserDetailsContentContract.UserDetails.DATEOFBIRTH, ""));
         userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
         userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
@@ -95,7 +111,11 @@ public class UserDetail {
         setBio("");
         setFirstName("");
         setLastName("");
+
+        Map<String, String> defaultMap = new HashMap<String, String>();
+        setAddedMedicines(defaultMap);
     }
+
 
     /**
      * Returns the internal ID
@@ -122,6 +142,16 @@ public class UserDetail {
      */
     public void setProfileId(String profileId) {
         this.profileId = profileId;
+    }
+
+
+    public Map<String, String> getAddedMedicines() {
+        return addedMedicines;
+    }
+
+    public void setAddedMedicines(Map<String, String> addedMedicines) {
+
+        this.addedMedicines = addedMedicines;
     }
 
     /**
@@ -186,6 +216,7 @@ public class UserDetail {
      * @param dateOfBirth the new age
      * @param bio the new bio
      */
+
     public void updateUserDetail(String dateOfBirth, String bio, String firstName, String lastName) {
         setDateOfBirth(dateOfBirth);
         setBio(bio);
@@ -210,7 +241,7 @@ public class UserDetail {
         ContentValues values = new ContentValues();
 
         values.put(UserDetailsContentContract.UserDetails.PROFILEID, profileId);
-        values.put(UserDetailsContentContract.UserDetails.ADDEDMEDICINES, addedMedicines);
+        values.put(UserDetailsContentContract.UserDetails.ADDEDMEDICINES, addedMedicines.toString());
         values.put(UserDetailsContentContract.UserDetails.DATEOFBIRTH, dateOfBirth);
         values.put(UserDetailsContentContract.UserDetails.BIO, bio);
         values.put(UserDetailsContentContract.UserDetails.FIRSTNAME, firstName);
