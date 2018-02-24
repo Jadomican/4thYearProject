@@ -48,7 +48,7 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
 
     @Override
     protected void onPreExecute() {
-        this.dialog.setMessage("Progress start");
+        this.dialog.setMessage("Loading medicines..");
         this.dialog.show();
     }
 

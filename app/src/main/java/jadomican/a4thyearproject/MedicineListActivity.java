@@ -28,7 +28,7 @@ public class MedicineListActivity extends AppCompatActivity
     private ListView mListView;
 
     //The url from which to fetch the JSON result
-    public static final String URL = "http://s3-eu-west-1.amazonaws.com/projectmedicalapp/medicine.json";
+    public static final String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
 
     private List<HashMap<String, String>> mMedicineMapList = new ArrayList<>();
     private HashMap<String, String> mapParam = new HashMap<String, String>();
