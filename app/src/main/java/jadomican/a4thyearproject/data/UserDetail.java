@@ -6,67 +6,82 @@ package jadomican.a4thyearproject.data;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.marshallers.ObjectToMapMarshaller;
+import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jadomican.a4thyearproject.AWSProvider;
+import jadomican.a4thyearproject.MedicineListActivity;
 
 /**
  * The User Profile model
  *
- * _id      The internal ID - only relevant to the current device
- * profileId   The global ID - should be unique globally
- * addedMedicines    The JSON-like document storing medicine details
+ * _id              The internal ID - only relevant to the current device
+ * profileId        The global ID - should be unique globally
+ * addedMedicines   The JSON Array storing added medicine details
  */
 
 public class UserDetail {
     private long id = -1;
     private String profileId;
-    private Map<String, String> addedMedicines = new HashMap<String, String>();
+    private List<Medicine> addedMedicines = new ArrayList<Medicine>();
     private String dateOfBirth;
     private String bio;
     private String firstName;
     private String lastName;
 
     /**
-     * Create a new UserDetail from a Cursor object.  This version provides default values for
-     * any information that is missing; hopefully, this ensures that the method never crashes
-     * the app.
+     * Create a new UserDetail from a Cursor object. Providing default values hopefully
+     * ensures that the method never crashes the app.
      *
      * @param c the cursor to read from - it must be set to the right position.
-     * @return the note stored in the cursor.
+     * @return the profile stored in the cursor.
      */
     public static UserDetail fromCursor(Cursor c) {
         UserDetail userDetail = new UserDetail();
-
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
         userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
 
-        String value = getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "");
+        String medicinesValue = getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "");
 
-        value = value.substring(1, value.length()-1);               //remove curly brackets
-        String[] keyValuePairs = value.split(",");            //split the string to create key-value pairs
-        Map<String,String> map = new HashMap<>();
+        //A list representing the user's added medicines
+        List<Medicine> listMedicines = new ArrayList<>();
 
-        for(String pair : keyValuePairs)                            //iterate over the pairs
-        {
-            String[] entry = pair.split("=");                   //split the pairs to get key and value
-            map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
+        if (medicinesValue != null) {
+
+            try {
+                JSONArray array = new JSONArray(medicinesValue);
+
+                // For each medicine, add to the list
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject element = array.getJSONObject(i);
+                    Medicine medicine = new Medicine();
+                    medicine.setMedicineName(element.get(MedicineListActivity.KEY_NAME).toString());
+                    medicine.setMedicineOnsetAction(element.get(MedicineListActivity.KEY_ONSETACTION).toString());
+                    medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
+                    medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
+                    listMedicines.add(medicine);
+                }
+            } catch (JSONException e) {
+                Log.d("UserDetail", "A JSONException has occurred: " + e.toString());
+            }
         }
 
-        userDetail.setAddedMedicines(map);
+        userDetail.setAddedMedicines(listMedicines);
         userDetail.setDateOfBirth(getString(c, UserDetailsContentContract.UserDetails.DATEOFBIRTH, ""));
         userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
         userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
         userDetail.setLastName(getString(c, UserDetailsContentContract.UserDetails.LASTNAME, ""));
-
         return userDetail;
     }
 
@@ -111,11 +126,9 @@ public class UserDetail {
         setBio("");
         setFirstName("");
         setLastName("");
-
-        Map<String, String> defaultMap = new HashMap<String, String>();
-        setAddedMedicines(defaultMap);
+        List<Medicine> defaultList = new ArrayList<>();
+        setAddedMedicines(defaultList);
     }
-
 
     /**
      * Returns the internal ID
@@ -130,26 +143,24 @@ public class UserDetail {
     public void setId(long id) { this.id = id;}
 
 
-/*    *//**
-     * Returns the noteId
-     * @return the note ID
+    /**
+     * Returns the profileId
      */
     public String getProfileId() { return profileId; }
 
-    /*
-     * Sets the noteId
-     * @param noteId the new note ID
+    /**
+     * Sets the profileId
      */
     public void setProfileId(String profileId) {
         this.profileId = profileId;
     }
 
 
-    public Map<String, String> getAddedMedicines() {
+    public List<Medicine> getAddedMedicines() {
         return addedMedicines;
     }
 
-    public void setAddedMedicines(Map<String, String> addedMedicines) {
+    public void setAddedMedicines(List<Medicine> addedMedicines) {
 
         this.addedMedicines = addedMedicines;
     }
@@ -212,14 +223,15 @@ public class UserDetail {
     }
 
     /**
-     * Updates the note
+     * Updates the profile
      * @param dateOfBirth the new age
      * @param bio the new bio
      */
 
-    public void updateUserDetail(String dateOfBirth, String bio, String firstName, String lastName) {
-        setDateOfBirth(dateOfBirth);
+    public void updateUserDetail(List<Medicine> addedMedicines, String bio, String dateOfBirth, String firstName, String lastName) {
+        setAddedMedicines(addedMedicines);
         setBio(bio);
+        setDateOfBirth(dateOfBirth);
         setFirstName(firstName);
         setLastName(lastName);
     }
@@ -230,23 +242,24 @@ public class UserDetail {
      */
     @Override
     public String toString() {
-        return String.format("[note#%s] %s", profileId, bio);
+        return String.format("[profile#%s] %s %s", profileId, firstName, lastName);
     }
 
     /**
-     * Return the ContentValue object for this record.  This should not include the _id
-     * field as it is stored for us.
+     * Return the ContentValue object for this record.  Doesn't include the User ID as it
+     * is stored locally for us
      */
     public ContentValues toContentValues() {
         ContentValues values = new ContentValues();
 
+        String jsonAddedMedicines = new Gson().toJson(addedMedicines);
         values.put(UserDetailsContentContract.UserDetails.PROFILEID, profileId);
-        values.put(UserDetailsContentContract.UserDetails.ADDEDMEDICINES, addedMedicines.toString());
+        values.put(UserDetailsContentContract.UserDetails.ADDEDMEDICINES, jsonAddedMedicines);
         values.put(UserDetailsContentContract.UserDetails.DATEOFBIRTH, dateOfBirth);
         values.put(UserDetailsContentContract.UserDetails.BIO, bio);
         values.put(UserDetailsContentContract.UserDetails.FIRSTNAME, firstName);
         values.put(UserDetailsContentContract.UserDetails.LASTNAME, lastName);
-
         return values;
     }
+
 }

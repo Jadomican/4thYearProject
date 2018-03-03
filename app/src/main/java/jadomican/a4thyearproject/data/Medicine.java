@@ -1,10 +1,14 @@
 package jadomican.a4thyearproject.data;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBDocument;
+
+import java.io.Serializable;
+
 /**
  * A model to represent a medicine object.
  */
-
-public class Medicine {
+@DynamoDBDocument
+public class Medicine implements Serializable {
 
     private String id;
     private String name;
@@ -39,7 +43,7 @@ public class Medicine {
         return onsetaction;
     }
 
-    public void setMedicineOnsetaction(String onsetaction) {
+    public void setMedicineOnsetAction(String onsetaction) {
         this.onsetaction = onsetaction;
     }
 }

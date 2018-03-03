@@ -16,18 +16,22 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.util.Log;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
+import com.google.gson.Gson;
 
-import java.util.HashMap;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import jadomican.a4thyearproject.AWSProvider;
+import jadomican.a4thyearproject.MedicineListActivity;
 
 /**
  * The Content Provider for the internal user-detail database
@@ -84,11 +88,11 @@ public class UserDetailsContentProvider extends ContentProvider {
     /**
      * Query for a (number of) records.
      *
-     * @param uri The URI to query
-     * @param projection The fields to return
-     * @param selection The WHERE clause
+     * @param uri           The URI to query
+     * @param projection    The fields to return
+     * @param selection     The WHERE clause
      * @param selectionArgs Any arguments to the WHERE clause
-     * @param sortOrder the sort order for the returned records
+     * @param sortOrder     the sort order for the returned records
      * @return a Cursor that can iterate over the results
      */
     @Nullable
@@ -136,12 +140,23 @@ public class UserDetailsContentProvider extends ContentProvider {
         return cursor;
     }
 
+    //Method to convert from a DynamoDB Object to add to Android Cursor
     private Object[] fromUserDetailDO(UserDetailDO userDetail) {
         String[] fields = UserDetailsContentContract.UserDetails.PROJECTION_ALL;
         Object[] r = new Object[fields.length];
-        for (int i = 0 ; i < fields.length ; i++) {
+
+        for (int i = 0; i < fields.length; i++) {
             if (fields[i].equals(UserDetailsContentContract.UserDetails.ADDEDMEDICINES)) {
-                r[i] = userDetail.getAddedMedicines();
+
+                //Try to convert addedMedicines String to a JSON array
+                try {
+                    String json = new Gson().toJson(userDetail.getAddedMedicines());
+                    JSONArray array = new JSONArray(json);
+                    r[i] = array.toString();
+                } catch (JSONException e) {
+                    r[i] = "";
+                }
+
             } else if (fields[i].equals(UserDetailsContentContract.UserDetails.DATEOFBIRTH)) {
                 r[i] = userDetail.getDateOfBirth();
             } else if (fields[i].equals(UserDetailsContentContract.UserDetails.BIO)) {
@@ -162,31 +177,29 @@ public class UserDetailsContentProvider extends ContentProvider {
     private UserDetailDO toUserDetailDO(ContentValues values) {
         final UserDetailDO userDetail = new UserDetailDO();
 
-        /*
-        Map<String, String> medicineMap = new HashMap<String, String>();
-        String s = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
-        String[] pairs = s.split(",");
-        for (int i=0;i<pairs.length;i++) {
-            String pair = pairs[i];
-            String[] keyValue = pair.split(":");
-            medicineMap.put(keyValue[0], String.valueOf(keyValue[1]));
+        //The String representing all of the added medicines
+        String medicinesValue = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
+        List<Medicine> listMedicines = new ArrayList<>();
+
+        try {
+            JSONArray array = new JSONArray(medicinesValue);
+
+            //Add each medicine to the list
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject element = array.getJSONObject(i);
+                Medicine medicine = new Medicine();
+                medicine.setMedicineName(element.get(MedicineListActivity.KEY_NAME).toString());
+                medicine.setMedicineOnsetAction(element.get(MedicineListActivity.KEY_ONSETACTION).toString());
+                medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
+                medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
+                listMedicines.add(medicine);
+            }
+
+        } catch (JSONException e) {
+
         }
-        */
 
-        String value = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
-
-        value = value.substring(1, value.length()-1);           //remove curly brackets
-        String[] keyValuePairs = value.split(",");              //split the string to creat key-value pairs
-        Map<String,String> map = new HashMap<>();
-
-        for(String pair : keyValuePairs)                        //iterate over the pairs
-        {
-            String[] entry = pair.split("=");                   //split the pairs to get key and value
-            map.put(entry[0].trim(), entry[1].trim());          //add them to the hashmap and trim whitespaces
-        }
-
-
-        userDetail.setAddedMedicines(map);
+        userDetail.setAddedMedicines(listMedicines);
         userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
         userDetail.setDateOfBirth(values.getAsString(UserDetailsContentContract.UserDetails.DATEOFBIRTH));
         userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));
@@ -219,7 +232,7 @@ public class UserDetailsContentProvider extends ContentProvider {
     /**
      * Insert a new record into the database.
      *
-     * @param uri the base URI to insert at (must be a directory-based URI)
+     * @param uri    the base URI to insert at (must be a directory-based URI)
      * @param values the values to be inserted
      * @return the URI of the inserted item
      */
@@ -242,11 +255,12 @@ public class UserDetailsContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
     }
+
     /**
      * Delete one or more records from the SQLite database.
      *
-     * @param uri the URI of the record(s) to delete
-     * @param selection A WHERE clause to use for the deletion
+     * @param uri           the URI of the record(s) to delete
+     * @param selection     A WHERE clause to use for the deletion
      * @param selectionArgs Any arguments to replace the ? in the selection
      * @return the number of rows deleted.
      */
@@ -272,13 +286,14 @@ public class UserDetailsContentProvider extends ContentProvider {
         }
         return rows;
     }
+
     /**
      * Part of the ContentProvider implementation.  Updates the record (based on the record URI)
      * with the specified ContentValues
      *
-     * @param uri The URI of the record(s)
-     * @param values The new values for the record(s)
-     * @param selection If the URI is a directory, the WHERE clause
+     * @param uri           The URI of the record(s)
+     * @param values        The new values for the record(s)
+     * @param selection     If the URI is a directory, the WHERE clause
      * @param selectionArgs Arguments for the WHERE clause
      * @return the number of rows updated
      */
@@ -305,6 +320,7 @@ public class UserDetailsContentProvider extends ContentProvider {
 
     /**
      * Notify all listeners that the specified URI has changed
+     *
      * @param uri the URI that changed
      */
     private void notifyAllListeners(Uri uri) {

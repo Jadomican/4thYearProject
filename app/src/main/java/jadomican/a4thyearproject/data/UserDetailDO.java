@@ -16,7 +16,7 @@ import java.util.Set;
 public class UserDetailDO {
     private String _userId;
     private String _profileId;
-    private Map<String, String> _addedMedicines;
+    private List<Medicine> _addedMedicines;
     private String _bio;
     private String _dateOfBirth;
     private String _firstName;
@@ -41,11 +41,11 @@ public class UserDetailDO {
         this._profileId = _profileId;
     }
     @DynamoDBAttribute(attributeName = "addedMedicines")
-    public Map<String, String> getAddedMedicines() {
+    public List<Medicine> getAddedMedicines() {
         return _addedMedicines;
     }
 
-    public void setAddedMedicines(final Map<String, String> _addedMedicines) {
+    public void setAddedMedicines(final List<Medicine> _addedMedicines) {
         this._addedMedicines = _addedMedicines;
     }
 

@@ -130,7 +130,6 @@ public class UserDetailFragment extends Fragment {
         timer.postDelayed(timerTask, 5000);
     }
 
-
     /**
      * Lifecycle event handler - called when the fragment is paused.  Use this to do any
      * saving of data as it is the last opportunity to reliably do so.
