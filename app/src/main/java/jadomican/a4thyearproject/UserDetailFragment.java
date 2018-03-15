@@ -4,6 +4,7 @@ package jadomican.a4thyearproject;
  * Created by jadom_000 on 27/01/2018.
  */
 
+        import android.app.DatePickerDialog;
         import android.content.AsyncQueryHandler;
         import android.content.ContentResolver;
         import android.content.ContentValues;
@@ -17,12 +18,15 @@ package jadomican.a4thyearproject;
         import android.view.View;
         import android.view.ViewGroup;
         import android.widget.Button;
+        import android.widget.DatePicker;
         import android.widget.EditText;
 
         import jadomican.a4thyearproject.data.UserDetail;
         import jadomican.a4thyearproject.data.UserDetailsContentContract;
         import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsClient;
         import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsEvent;
+
+        import java.util.Calendar;
 
 /**
  * A fragment representing a single Profile detail screen.
@@ -202,6 +206,26 @@ public class UserDetailFragment extends Fragment {
         editBio.setText(mItem.getBio());
         editFirstName.setText(mItem.getFirstName());
         editLastName.setText(mItem.getLastName());
+
+        // Create a listener to allow user to choose date from a calendar
+        editDateOfBirth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar c = Calendar.getInstance();
+                int mYear = c.get(Calendar.YEAR);
+                int mMonth = c.get(Calendar.MONTH);
+                int mDay = c.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                editDateOfBirth.setText(String.format("%04d-%02d-%02d", year, (monthOfYear + 1), dayOfMonth));
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+            }
+        });
 
         // Button to allow user to save new details to profile
         Button updateProfileButton = (Button) rootView.findViewById(R.id.update_profile_button);
