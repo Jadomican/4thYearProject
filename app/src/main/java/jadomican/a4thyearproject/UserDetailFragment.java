@@ -16,6 +16,7 @@ package jadomican.a4thyearproject;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
+        import android.widget.Button;
         import android.widget.EditText;
 
         import jadomican.a4thyearproject.data.UserDetail;
@@ -37,7 +38,7 @@ public class UserDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "profileId";
 
     /**
-     * The dummy content this fragment is presenting.
+     * The content this fragment is presenting.
      */
     private UserDetail mItem;
     private Uri itemUri;
@@ -60,31 +61,14 @@ public class UserDetailFragment extends Fragment {
     EditText editFirstName;
     EditText editLastName;
 
-
     /**
-     * The timer for saving the record back to SQL
-     */
-    Handler timer = new Handler();
-    Runnable timerTask = new Runnable() {
-        @Override
-        public void run() {
-            saveData();                             // Save the data
-            timer.postDelayed(timerTask, 5000);     // Every 5 seconds
-        }
-    };
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
+     * Required empty constructor for the fragment manager to instantiate the
+     * fragment
      */
     public UserDetailFragment() {
     }
 
-    /**
-     * Lifecycle event handler - called when the fragment is created.
-     * @param savedInstanceState the saved state
-     */
-// Constants used for async data operations
+    // Constants used for async data operations
     private static final int QUERY_TOKEN = 1001;
     private static final int UPDATE_TOKEN = 1002;
     private static final int INSERT_TOKEN = 1003;
@@ -103,7 +87,6 @@ public class UserDetailFragment extends Fragment {
         if (arguments != null && arguments.containsKey(ARG_ITEM_ID)) {
             String itemId = getArguments().getString(ARG_ITEM_ID);
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
-
 
             // Replace local cursor methods with async query handling
             AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
@@ -125,9 +108,6 @@ public class UserDetailFragment extends Fragment {
         } else {
             isUpdate = false;
         }
-
-        // Start the timer for the delayed start
-        timer.postDelayed(timerTask, 5000);
     }
 
     /**
@@ -137,7 +117,6 @@ public class UserDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        timer.removeCallbacks(timerTask);
         saveData();
     }
 
@@ -163,7 +142,6 @@ public class UserDetailFragment extends Fragment {
             mItem.setLastName(editLastName.getText().toString().trim());
             isUpdated = true;
         }
-
 
         // Convert to ContentValues and store in the database.
         if (isUpdated) {
@@ -198,7 +176,6 @@ public class UserDetailFragment extends Fragment {
                 mgr.recordEvent(evt);
                 mgr.submitEvents();
             }
-
         }
     }
 
@@ -226,6 +203,17 @@ public class UserDetailFragment extends Fragment {
         editFirstName.setText(mItem.getFirstName());
         editLastName.setText(mItem.getLastName());
 
+        // Button to allow user to save new details to profile
+        Button updateProfileButton = (Button) rootView.findViewById(R.id.update_profile_button);
+        updateProfileButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // Save data on button click
+                saveData();
+            }
+        });
         return rootView;
     }
 }

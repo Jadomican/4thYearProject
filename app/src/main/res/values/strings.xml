@@ -1,7 +1,16 @@
 <resources>
-    <string name="app_name">4thYearProject</string>
+    <string name="app_name">Medi App</string>
     <string name="title_home">Home</string>
-    <string name="title_user_detail">User Details</string>
+    <string name="profile_bio">Bio</string>
+    <string name="profile_age">Age</string>
+    <string name="profile_first_name">First Name</string>
+    <string name="profile_surname">Surname</string>
+    <string name="profile_dob">Date of Birth</string>
+    <string name="title_user_detail">User Profile</string>
     <string name="title_medicine_list">Medicine Search</string>
-
+    <string name="button_update_profile">Update Profile</string>
+    <string name="button_edit_profile">Edit Your Profile</string>
+    <string name="button_search_medicines">Search For Medicines</string>
+    <string name="button_add_medicine">Add Medicine to Profile</string>
+    <string name="welcome">Welcome to MediApp</string>
 </resources>
