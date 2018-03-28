@@ -70,6 +70,7 @@ public class UserDetail {
                     medicine.setMedicineOnsetAction(element.get(MedicineListActivity.KEY_ONSETACTION).toString());
                     medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
                     medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
+                    medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
                     listMedicines.add(medicine);
                 }
             } catch (JSONException e) {

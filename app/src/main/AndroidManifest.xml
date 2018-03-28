@@ -57,11 +57,13 @@
             android:label="@string/title_medicine_list">
 
         </activity>
-        <activity android:name=".MedicineDetailsActivity">
+        <activity android:name=".MedicineDetailsActivity"
+            android:parentActivityName=".MedicineListActivity">
 
         </activity>
         <activity android:name=".OcrCaptureActivity"
-            android:label="Read Text">
+            android:label="Read Text"
+            android:parentActivityName=".MainActivity">
         </activity>
     </application>
 

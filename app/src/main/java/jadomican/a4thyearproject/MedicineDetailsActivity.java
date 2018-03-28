@@ -4,14 +4,19 @@ import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +53,44 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                 medicine.setMedicineType(extras.getString(MedicineListActivity.KEY_TYPE));
                 medicine.setMedicineOnsetAction(extras.getString(MedicineListActivity.KEY_ONSETACTION));
                 medicine.setMedicineId(extras.getString(MedicineListActivity.KEY_ID));
+                medicine.setMedicineImageUrl(extras.getString(MedicineListActivity.KEY_IMAGEURL));
                 syncUser();
+                setImage();
+
             }
+    }
+
+    // Download the image belonging to the medicine
+    private class ImageDownload extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public ImageDownload(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... url) {
+            Bitmap bitmap = null;
+
+            try {
+                InputStream in = new java.net.URL(url[0]).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("MedicineDetailsActivity", e.getMessage());
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+    private void setImage() {
+        final ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
+        ImageDownload imgDownload = new ImageDownload(imageView);
+        imgDownload.execute(medicine.getMedicineImageUrl());
     }
 
     public void saveData(View view) {

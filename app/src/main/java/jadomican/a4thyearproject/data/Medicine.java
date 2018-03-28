@@ -14,6 +14,7 @@ public class Medicine implements Serializable {
     private String name;
     private String type;
     private String onsetaction;
+    private String imageurl;
 
     public String getMedicineId() {
         return id;
@@ -21,6 +22,14 @@ public class Medicine implements Serializable {
 
     public void setMedicineId(String id) {
         this.id = id;
+    }
+
+    public String getMedicineImageUrl() {
+        return imageurl;
+    }
+
+    public void setMedicineImageUrl(String url) {
+        this.imageurl = url;
     }
 
     public String getMedicineName() {

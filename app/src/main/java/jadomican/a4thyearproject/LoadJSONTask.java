@@ -104,5 +104,4 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
         return response.toString();
     }
 
-
 }
