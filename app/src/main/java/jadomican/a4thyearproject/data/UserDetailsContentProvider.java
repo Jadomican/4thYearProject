@@ -180,7 +180,6 @@ public class UserDetailsContentProvider extends ContentProvider {
         //The String representing all of the added medicines
         String medicinesValue = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
         List<Medicine> listMedicines = new ArrayList<>();
-
         try {
             JSONArray array = new JSONArray(medicinesValue);
 
@@ -193,12 +192,13 @@ public class UserDetailsContentProvider extends ContentProvider {
                 medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
                 medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
                 medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
+                medicine.setMedicineConflict(element.get(MedicineListActivity.KEY_CONFLICT).toString());
 
                 listMedicines.add(medicine);
             }
 
         } catch (JSONException e) {
-
+            Log.d("UserDetailsProvider", "A JSONException has occurred: " + e.toString());
         }
 
         userDetail.setAddedMedicines(listMedicines);

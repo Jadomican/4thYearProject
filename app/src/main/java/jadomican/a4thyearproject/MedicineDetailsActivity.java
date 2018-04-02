@@ -8,11 +8,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -36,28 +37,38 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
     Medicine medicine = new Medicine();
 
+    Button addMedicineButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_details);
 
+        addMedicineButton = (Button) findViewById(R.id.addMedicineButton);
+        addMedicineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveData(v);
+            }
+        });
+
         contentResolver = getApplicationContext().getContentResolver();
 
-            Bundle extras = getIntent().getExtras();
-            if (extras != null && extras.containsKey(UserDetailFragment.ARG_ITEM_ID)) {
-                String itemId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
-                itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey(UserDetailFragment.ARG_ITEM_ID)) {
+            String itemId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
+            itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
 
-                //Populate the Medicine object based on the choice made by the user from the list
-                medicine.setMedicineName(extras.getString(MedicineListActivity.KEY_NAME));
-                medicine.setMedicineType(extras.getString(MedicineListActivity.KEY_TYPE));
-                medicine.setMedicineOnsetAction(extras.getString(MedicineListActivity.KEY_ONSETACTION));
-                medicine.setMedicineId(extras.getString(MedicineListActivity.KEY_ID));
-                medicine.setMedicineImageUrl(extras.getString(MedicineListActivity.KEY_IMAGEURL));
-                syncUser();
-                setImage();
-
-            }
+            //Populate the Medicine object based on the choice made by the user from the list
+            medicine.setMedicineName(extras.getString(MedicineListActivity.KEY_NAME));
+            medicine.setMedicineType(extras.getString(MedicineListActivity.KEY_TYPE));
+            medicine.setMedicineOnsetAction(extras.getString(MedicineListActivity.KEY_ONSETACTION));
+            medicine.setMedicineId(extras.getString(MedicineListActivity.KEY_ID));
+            medicine.setMedicineImageUrl(extras.getString(MedicineListActivity.KEY_IMAGEURL));
+            medicine.setMedicineConflict(extras.getString(MedicineListActivity.KEY_CONFLICT));
+            syncUser();
+            setImage();
+        }
     }
 
     // Download the image belonging to the medicine
@@ -91,6 +102,21 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         final ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
         ImageDownload imgDownload = new ImageDownload(imageView);
         imgDownload.execute(medicine.getMedicineImageUrl());
+    }
+
+    // Alert user of medicine conflict
+    private void setButton() {
+        String buttonText = getString(R.string.button_add_medicine);
+        for (Medicine addedMedicine : mItem.getAddedMedicines()) {
+            if (addedMedicine.getMedicineConflict().equals(medicine.getMedicineName()))
+            {
+                buttonText = getString(R.string.button_medicine_conflict);
+                //getColor is deprecated as of API 23, use ContextCompat instead
+                addMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.danger));
+                break;
+            }
+        }
+        addMedicineButton.setText(buttonText);
     }
 
     public void saveData(View view) {
@@ -151,6 +177,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
                 cursor.moveToFirst();
                 mItem = UserDetail.fromCursor(cursor);
+                setButton();
             }
         };
         queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);

@@ -15,6 +15,7 @@ public class Medicine implements Serializable {
     private String type;
     private String onsetaction;
     private String imageurl;
+    private String conflict;
 
     public String getMedicineId() {
         return id;
@@ -54,5 +55,13 @@ public class Medicine implements Serializable {
 
     public void setMedicineOnsetAction(String onsetaction) {
         this.onsetaction = onsetaction;
+    }
+
+    public String getMedicineConflict() {
+        return conflict;
+    }
+
+    public void setMedicineConflict(String conflict) {
+        this.conflict = conflict;
     }
 }

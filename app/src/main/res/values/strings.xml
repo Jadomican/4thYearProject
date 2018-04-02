@@ -13,6 +13,7 @@
     <string name="button_edit_profile">Edit Your Profile</string>
     <string name="button_search_medicines">Search For Medicines</string>
     <string name="button_add_medicine">Add Medicine to Profile</string>
+    <string name="button_medicine_conflict">Conflict Detected!</string>
     <string name="welcome">Welcome to MediApp</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
@@ -25,4 +26,9 @@
     <string name="ocr_success">Text read successfully</string>
     <string name="ocr_failure">No text captured</string>
     <string name="ocr_error">"Error reading text: %1$s"</string>
+    <string name="medicine_search_info_title">"Medicine Search"</string>
+    <string name="medicine_search_info_message">"Perform a search for medicine in our database"</string>
+    <string name="camera_info_title">"Camera Search"</string>
+    <string name="camera_info_message">"Use the camera to scan text to search for medicines"</string>
+
 </resources>

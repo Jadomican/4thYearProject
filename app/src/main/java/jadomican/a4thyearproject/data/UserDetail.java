@@ -71,6 +71,8 @@ public class UserDetail {
                     medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
                     medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
                     medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
+                    medicine.setMedicineConflict(element.get(MedicineListActivity.KEY_CONFLICT).toString());
+
                     listMedicines.add(medicine);
                 }
             } catch (JSONException e) {

@@ -38,6 +38,7 @@ public class MedicineListActivity extends AppCompatActivity
     public static final String KEY_TYPE = "type";
     public static final String KEY_ONSETACTION = "onsetaction";
     public static final String KEY_IMAGEURL = "imageurl";
+    public static final String KEY_CONFLICT = "conflict";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class MedicineListActivity extends AppCompatActivity
             map.put(KEY_TYPE, medicine.getMedicineType());
             map.put(KEY_ONSETACTION, medicine.getMedicineOnsetAction());
             map.put(KEY_IMAGEURL, medicine.getMedicineImageUrl());
+            map.put(KEY_CONFLICT, medicine.getMedicineConflict());
 
             //For each medicine, add to list
             mMedicineMapList.add(map);
@@ -86,7 +88,7 @@ public class MedicineListActivity extends AppCompatActivity
         arguments.putString(KEY_ONSETACTION, mMedicineMapList.get(i).get(KEY_ONSETACTION));
         arguments.putString(KEY_ID, mMedicineMapList.get(i).get(KEY_ID));
         arguments.putString(KEY_IMAGEURL, mMedicineMapList.get(i).get(KEY_IMAGEURL));
-
+        arguments.putString(KEY_CONFLICT, mMedicineMapList.get(i).get(KEY_CONFLICT));
 
         Context context = view.getContext();
         Intent intent = new Intent(context, MedicineDetailsActivity.class);
