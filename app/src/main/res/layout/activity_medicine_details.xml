@@ -14,6 +14,23 @@
         android:adjustViewBounds="true"
         android:layout_alignParentTop="true"/>
 
+    <TextView
+        android:id="@+id/medicineNameDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="false"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/imageDisplay"
+        android:drawableRight="@drawable/ic_speak"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:drawablePadding="5dip"
+        />
+
     <Button
         android:id="@+id/addMedicineButton"
         style="@android:style/Widget.Holo.Button"
@@ -27,7 +44,7 @@
         android:text="@string/button_add_medicine"
         android:adjustViewBounds="false"
         android:layout_centerInParent="true"
-        android:layout_below="@id/imageDisplay"
+        android:layout_below="@id/medicineNameDisplay"
         />
 
 </RelativeLayout>

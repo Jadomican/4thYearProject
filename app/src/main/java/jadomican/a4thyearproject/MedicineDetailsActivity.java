@@ -1,25 +1,31 @@
 package jadomican.a4thyearproject;
 
+import android.app.AlertDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jadomican.a4thyearproject.data.Medicine;
 import jadomican.a4thyearproject.data.UserDetail;
@@ -35,8 +41,12 @@ public class MedicineDetailsActivity extends AppCompatActivity {
     private static final int QUERY_TOKEN = 1001;
     private static final int UPDATE_TOKEN = 1002;
 
+    // A TextToSpeech engine for speaking a String value.
+    private TextToSpeech tts;
+
     Medicine medicine = new Medicine();
 
+    TextView medicineNameDisplay;
     Button addMedicineButton;
 
     @Override
@@ -51,6 +61,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                 saveData(v);
             }
         });
+        medicineNameDisplay = (TextView) findViewById(R.id.medicineNameDisplay);
 
         contentResolver = getApplicationContext().getContentResolver();
 
@@ -69,6 +80,23 @@ public class MedicineDetailsActivity extends AppCompatActivity {
             syncUser();
             setImage();
         }
+
+        setTouchListener(medicineNameDisplay, medicine.getMedicineName());
+
+        TextToSpeech.OnInitListener listener =
+                new TextToSpeech.OnInitListener() {
+                    @Override
+                    public void onInit(final int status) {
+                        if (status == TextToSpeech.SUCCESS) {
+                            Log.d("TTS", "Text to speech engine started successfully.");
+                            tts.setLanguage(Locale.getDefault());
+                        } else {
+                            Log.d("TTS", "Error starting the text to speech engine.");
+                        }
+                    }
+                };
+        tts = new TextToSpeech(this.getApplicationContext(), listener);
+
     }
 
     // Download the image belonging to the medicine
@@ -105,7 +133,8 @@ public class MedicineDetailsActivity extends AppCompatActivity {
     }
 
     // Alert user of medicine conflict
-    private void setButton() {
+    private void setAssets() {
+        medicineNameDisplay.setText(medicine.getMedicineName());
         String buttonText = getString(R.string.button_add_medicine);
         for (Medicine addedMedicine : mItem.getAddedMedicines()) {
             if (addedMedicine.getMedicineConflict().equals(medicine.getMedicineName()))
@@ -177,9 +206,34 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
                 cursor.moveToFirst();
                 mItem = UserDetail.fromCursor(cursor);
-                setButton();
+                setAssets();
             }
         };
         queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
     }
+
+    // Set a listener for the text-to-speech icon
+    public void setTouchListener(final TextView textView, final String wordsToSay) {
+        // noinspection AndroidLintClickableViewAccessibility
+        textView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // DrawableRight is index value 2 for the getCompoundDrawables method
+                final int DRAWABLE_RIGHT = 2;
+
+                // If user presses down (taps) on icon
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= (medicineNameDisplay.getRight() - medicineNameDisplay.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (wordsToSay != null)
+                        {
+                            tts.speak(wordsToSay, TextToSpeech.QUEUE_ADD, null, "DEFAULT");
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
 }
