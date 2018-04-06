@@ -4,6 +4,7 @@ package jadomican.a4thyearproject;
  * Created by jadom_000 on 27/01/2018.
  */
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -52,7 +53,7 @@ public class UserDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 //        int id = item.getItemId();
 //        if (id == android.R.id.home) {
-//            navigateUpTo(new Intent(this, NoteListActivity.class));
+//            navigateUpTo(new Intent(this, MedicineListActivity.class));
 //            return true;
 //        }
         return super.onOptionsItemSelected(item);

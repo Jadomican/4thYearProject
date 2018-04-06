@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     tools:context="jadomican.a4thyearproject.MainActivity">
 
     <TextView
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/welcome"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -27,13 +29,15 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="goToEditProfile"
+        android:backgroundTint="@color/mediBlue"
+        android:onClick="goToProfileHub"
         android:text="@string/button_edit_profile"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.537" />
+        app:layout_constraintVertical_bias="0.737" />
 
     <Button
         android:id="@+id/medicineSearchButton"
@@ -44,9 +48,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:backgroundTint="@color/mediBlue"
+        android:drawableRight="@drawable/ic_info"
         android:onClick="goToSearchMedicines"
         android:text="@string/button_search_medicines"
-        android:drawableRight="@android:drawable/ic_menu_info_details"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -63,14 +69,16 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:backgroundTint="@color/mediBlue"
+        android:drawableRight="@drawable/ic_info"
         android:onClick="goToCameraSearch"
         android:text="@string/camera_info_title"
-        android:drawableRight="@android:drawable/ic_menu_info_details"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.731" />
+        app:layout_constraintVertical_bias="0.537" />
 
 
 </android.support.constraint.ConstraintLayout>

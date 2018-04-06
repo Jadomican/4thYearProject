@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setTouchListener(cameraSearchButton,
                 getResources().getString(R.string.camera_info_title),
                 getResources().getString(R.string.camera_info_message));
+
     }
 
     public void goToEditProfile(View view) {
@@ -50,10 +51,14 @@ public class MainActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-    public void goToSearchMedicines(View view) {
+    public void goToProfileHub(View view) {
         Context context = view.getContext();
-        Intent intent = new Intent(context, MedicineListActivity.class);
+        Intent intent = new Intent(context, ProfileMedicineListActivity.class);
         context.startActivity(intent);
+    }
+
+    public void goToSearchMedicines(View view) {
+        onSearchRequested();
     }
 
     public void goToCameraSearch(View view) {
@@ -94,6 +99,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
 }
-

@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/half_overlay"
-        android:drawable="@drawable/ic_lock_silent_mode_off"
+        android:drawable="@drawable/ic_speaker"
         android:width="30dp"
         android:height="30dp"
         />

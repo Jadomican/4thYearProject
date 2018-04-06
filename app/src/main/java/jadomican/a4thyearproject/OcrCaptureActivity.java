@@ -270,6 +270,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 //Context context = view.getContext();
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, MedicineListActivity.class);
+                intent.putExtra(MedicineListActivity.KEY_QUERY, text.getValue().toLowerCase());
                 context.startActivity(intent);
             }
             else {

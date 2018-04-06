@@ -1,16 +1,17 @@
 package jadomican.a4thyearproject;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -27,8 +28,8 @@ public class MedicineListActivity extends AppCompatActivity
 
     private ListView mListView;
 
-    //The url from which to fetch the JSON result
-    public static final String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
+    //The url from which to invoke the API and fetch the JSON result
+    public String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
 
     //List of HashMaps to represent the list of medicines to be displayed
     private List<HashMap<String, String>> mMedicineMapList = new ArrayList<>();
@@ -39,6 +40,7 @@ public class MedicineListActivity extends AppCompatActivity
     public static final String KEY_ONSETACTION = "onsetaction";
     public static final String KEY_IMAGEURL = "imageurl";
     public static final String KEY_CONFLICT = "conflict";
+    public static final String KEY_QUERY = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,22 @@ public class MedicineListActivity extends AppCompatActivity
 
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setOnItemClickListener(this);
+
+        // Get the intent, verify that a search occurred
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            // Append the query to the URL
+            URL += "/" + intent.getStringExtra(SearchManager.QUERY);
+            Log.d("Search", "SEARCHED:" + URL);
+        }
+        else if (intent.getStringExtra(MedicineListActivity.KEY_QUERY) != null) {
+            URL += "/" + intent.getStringExtra(MedicineListActivity.KEY_QUERY);
+        }
+
+
+
+
+        // Invoke API and return results
         new LoadJSONTask(this,this).execute(URL);
     }
 
@@ -67,13 +85,13 @@ public class MedicineListActivity extends AppCompatActivity
             mMedicineMapList.add(map);
         }
 
-        Toast.makeText(this, "Found " + medicineList.size() + " results", Toast.LENGTH_SHORT).show();
+        MediApp.customToast("Found " + medicineList.size() + " results");
         loadListView();
     }
 
     @Override
     public void onError() {
-        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+        MediApp.customToast("Something went wrong");
     }
 
     @Override
