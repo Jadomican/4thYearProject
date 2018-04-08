@@ -3,15 +3,23 @@ package jadomican.a4thyearproject;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -27,7 +35,8 @@ public class MedicineListActivity extends AppCompatActivity
         implements LoadJSONTask.Listener, AdapterView.OnItemClickListener {
 
     private ListView mListView;
-
+    private DrawerLayout mDrawerLayout;
+    private NavigationView navigationView;
     //The url from which to invoke the API and fetch the JSON result
     public String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
 
@@ -46,6 +55,17 @@ public class MedicineListActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_list);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        MediApp.setNavigationListener(navigationView, mDrawerLayout, -1, this);
 
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setOnItemClickListener(this);
@@ -61,11 +81,20 @@ public class MedicineListActivity extends AppCompatActivity
             URL += "/" + intent.getStringExtra(MedicineListActivity.KEY_QUERY);
         }
 
-
-
-
         // Invoke API and return results
         new LoadJSONTask(this,this).execute(URL);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d("in", "INNNN");
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //The onLoaded() method is called when the request is successful
@@ -124,6 +153,31 @@ public class MedicineListActivity extends AppCompatActivity
                 new String[]{KEY_NAME, KEY_TYPE, KEY_ONSETACTION},
                 new int[]{R.id.name, R.id.type, R.id.onsetaction});
         mListView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
+
+    // Open the navigation bar when pressing the back button
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawers();
+        } else {
+            mDrawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    // Add the addition action bar items based on the xml defined menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bar_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
 }

@@ -53,13 +53,13 @@
         <activity
             android:name=".UserDetailActivity"
             android:label="@string/title_user_detail"
-            android:parentActivityName=".UserDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
         <activity
             android:name=".MedicineListActivity"
-            android:label="@string/title_medicine_list">
+            android:label="@string/title_medicine_list"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -70,17 +70,19 @@
         </activity>
         <activity
             android:name=".MedicineDetailsActivity"
-            android:parentActivityName=".MedicineListActivity">
+            android:parentActivityName=".MedicineListActivity"
+            android:label="@string/title_medicine_list">
 
         </activity>
         <activity
             android:name=".OcrCaptureActivity"
             android:label="Read Text"
-            android:parentActivityName=".MainActivity">
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
         <activity android:name=".ProfileMedicineListActivity"
-            android:label="Your Medicines">
+            android:label="@string/your_profile_medicines"
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
     </application>

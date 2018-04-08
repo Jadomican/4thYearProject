@@ -155,12 +155,14 @@ public class UserDetailFragment extends Fragment {
                 @Override
                 protected void onInsertComplete(int token, Object cookie, Uri uri) {
                     super.onInsertComplete(token, cookie, uri);
+                    MediApp.customToast("Details Saved");
                     Log.d("UserDetailFragment", "insert completed");
                 }
 
                 @Override
                 protected void onUpdateComplete(int token, Object cookie, int result) {
                     super.onUpdateComplete(token, cookie, result);
+                    MediApp.customToast("Details Saved");
                     Log.d("UserDetailFragment", "update completed");
                 }
             };

@@ -4,18 +4,29 @@ import android.app.AlertDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.support.design.widget.NavigationView;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.AdapterView;
 import android.widget.SimpleAdapter;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -39,6 +50,8 @@ public class ProfileMedicineListActivity extends AppCompatActivity
 
     private UserDetail mItem;
     private Uri itemUri;
+    private DrawerLayout mDrawerLayout;
+    NavigationView navigationView;
 
     private ContentResolver contentResolver;
 
@@ -55,13 +68,21 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_medicine_list);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        //mListView = (ListView) findViewById(R.id.profile_list_view);
+        navigationView.setCheckedItem(R.id.nav_profile_medicines);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        MediApp.setNavigationListener(navigationView, mDrawerLayout, R.id.nav_profile_medicines, this);
 
         mListView = (SwipeMenuListView) findViewById(R.id.profile_list_view);
-
         mListView.setOnItemClickListener(this);
-
         // Perform bounce animation when closing menu
         mListView.setCloseInterpolator(new BounceInterpolator());
 
@@ -70,8 +91,6 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         // Get current user details based on user ID
         String itemId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
         itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
-
-        syncUser();
 
         // Initialise and populate the Swipe Menu Creator
         SwipeMenuCreator creator = new SwipeMenuCreator() {
@@ -146,6 +165,8 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 return false;
             }
         });
+
+
     }
 
     // Update the profile if a delete has been specified
@@ -239,6 +260,45 @@ public class ProfileMedicineListActivity extends AppCompatActivity
 //        intent.putExtras(arguments);
 //        context.startActivity(intent);
         Log.d("profile", "touched");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        navigationView.setCheckedItem(R.id.nav_profile_medicines);
+        // Refresh the list on activity resume with latest details
+        mMedicineMapList.clear();
+        syncUser();
+    }
+
+    // Open the navigation bar when pressing the back button
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawers();
+        } else {
+            mDrawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    // Add the addition action bar items based on the xml defined menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bar_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
 }

@@ -11,6 +11,8 @@
     <string name="title_medicine_list">Medicine Search</string>
     <string name="button_update_profile">Update Profile</string>
     <string name="button_edit_profile">Edit Your Profile</string>
+    <string name="your_profile_medicines">Your Medicines</string>
+    <string name="view_profile_medicines">View Your Medicines</string>
     <string name="button_search_medicines">Search For Medicines</string>
     <string name="button_add_medicine">Add Medicine to Profile</string>
     <string name="button_medicine_conflict">Conflict Detected!</string>

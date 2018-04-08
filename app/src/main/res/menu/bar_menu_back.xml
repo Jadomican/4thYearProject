@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_back"
+        android:icon="@drawable/ic_action_back"
+        android:title="Back to results"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/view_profile_medicines"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Settings, always in the overflow -->
+    <item android:id="@+id/action_settings"
+        android:icon="@drawable/ic_action_settings"
+        android:title="More options"
+        app:showAsAction="never"/>
+
+</menu>

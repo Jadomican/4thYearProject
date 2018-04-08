@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_action_home"
+            android:title="@string/title_home" />
+        <item
+            android:id="@+id/nav_edit_profile"
+            android:icon="@drawable/ic_action_name"
+            android:title="@string/button_edit_profile" />
+        <item
+            android:id="@+id/nav_profile_medicines"
+            android:icon="@drawable/ic_person"
+            android:title="@string/view_profile_medicines" />
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_camera"
+            android:title="@string/camera_info_title" />
+
+    </group>
+</menu>

@@ -1,6 +1,7 @@
 package jadomican.a4thyearproject;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -11,16 +12,23 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,21 +56,27 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
     TextView medicineNameDisplay;
     Button addMedicineButton;
+    NavigationView navigationView;
+    private DrawerLayout mDrawerLayout;
+
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_details);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        addMedicineButton = (Button) findViewById(R.id.addMedicineButton);
-        addMedicineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveData(v);
-            }
-        });
-        medicineNameDisplay = (TextView) findViewById(R.id.medicineNameDisplay);
+        // Set up the toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        MediApp.setNavigationListener(navigationView, mDrawerLayout, -1, this);
 
+        dialog = new ProgressDialog(this);
         contentResolver = getApplicationContext().getContentResolver();
 
         Bundle extras = getIntent().getExtras();
@@ -81,6 +95,15 @@ public class MedicineDetailsActivity extends AppCompatActivity {
             setImage();
         }
 
+        addMedicineButton = (Button) findViewById(R.id.addMedicineButton);
+        addMedicineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveData(v);
+            }
+        });
+        medicineNameDisplay = (TextView) findViewById(R.id.medicineNameDisplay);
+
         setTouchListener(medicineNameDisplay, medicine.getMedicineName());
 
         TextToSpeech.OnInitListener listener =
@@ -96,7 +119,6 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                     }
                 };
         tts = new TextToSpeech(this.getApplicationContext(), listener);
-
     }
 
     // Download the image belonging to the medicine
@@ -108,9 +130,14 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            dialog.setMessage("Loading medicine..");
+            dialog.show();
+        }
+
+        @Override
         protected Bitmap doInBackground(String... url) {
             Bitmap bitmap = null;
-
             try {
                 InputStream in = new java.net.URL(url[0]).openStream();
                 bitmap = BitmapFactory.decodeStream(in);
@@ -123,6 +150,9 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
         }
     }
 
@@ -158,7 +188,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
             if (addedMedicine.getMedicineName().equals(medicine.getMedicineName()))
             {
-                Toast.makeText(this, addedMedicine.getMedicineName() + " has already been added!", Toast.LENGTH_SHORT).show();
+                MediApp.customToast(addedMedicine.getMedicineName() + " has already been added!");
                 isUpdated = false;
             }
         }
@@ -174,12 +204,14 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                 @Override
                 protected void onInsertComplete(int token, Object cookie, Uri uri) {
                     super.onInsertComplete(token, cookie, uri);
+                    MediApp.customToast("Medicine Added");
                     Log.d("MedicineDetailsActivity", "insert completed");
                 }
 
                 @Override
                 protected void onUpdateComplete(int token, Object cookie, int result) {
                     super.onUpdateComplete(token, cookie, result);
+                    MediApp.customToast("Medicine Added");
                     Log.d("MedicineDetailsActivity", "update completed");
                 }
             };
@@ -187,18 +219,34 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
         syncUser();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_search:
+                Log.d(MedicineDetailsActivity.class.getName(),"search");
+                onSearchRequested();
+                return true;
+            case R.id.action_back:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     //Populate the user object with their latest changes from the DynamoDB table
     private void syncUser()
     {
         contentResolver = getApplicationContext().getContentResolver();
-        // Replace local cursor methods with async query handling
+        // Asynchronously query the backend database
         AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
             @Override
             protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
@@ -234,6 +282,16 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    // Add the additional action bar items based on the xml defined menu. In this particular activity
+    // a back button is provided in the toolbar to return to the previously performed search
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bar_menu_back, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
 }
