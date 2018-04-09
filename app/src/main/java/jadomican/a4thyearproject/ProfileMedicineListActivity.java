@@ -62,6 +62,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     public static final String SORT_DATE = "date";
     public static final String SORT_TYPE = "type";
     public static final String DATE_FORMAT = "dd/MMM/yyyy HH:mm z";
+    public static final String KEY_DATE_FORMAT = "formattedDate";
 
     //private ListView mListView;
     SwipeMenuListView mListView;
@@ -211,7 +212,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
 
                 cursor.moveToFirst();
                 mItem = UserDetail.fromCursor(cursor);
-                populateAndLoadList(SORT_NAME);
+                populateAndLoadList(SORT_DATE);
             }
         };
         queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
@@ -237,6 +238,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
             map.put(MedicineListActivity.KEY_IMAGEURL, medicine.getMedicineImageUrl());
             map.put(MedicineListActivity.KEY_CONFLICT, medicine.getMedicineConflict());
             map.put(MedicineListActivity.KEY_DATE, medicine.getMedicineDate());
+            map.put(KEY_DATE_FORMAT, MediApp.getFormattedDate(medicine.getMedicineDate()));
 
             //For each medicine, add to list
             mMedicineMapList.add(map);
@@ -256,7 +258,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 ProfileMedicineListActivity.this,
                 mMedicineMapList,
                 R.layout.list_item_date,
-                new String[]{MedicineListActivity.KEY_NAME, MedicineListActivity.KEY_TYPE, MedicineListActivity.KEY_DATE},
+                new String[]{MedicineListActivity.KEY_NAME, MedicineListActivity.KEY_TYPE, KEY_DATE_FORMAT},
                 new int[]{R.id.name, R.id.type, R.id.date});
         mListView.setAdapter(adapter);
     }

@@ -14,7 +14,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import jadomican.a4thyearproject.data.UserDetail;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by jadom on 05/04/2018.
@@ -90,6 +94,19 @@ public class MediApp extends Application {
                         }
                     }
                 });
+    }
+
+    // Return a properly formatted date based on the user's device settings
+    static DateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT);
+    public static String getFormattedDate(String date) {
+        try {
+            df.setTimeZone(TimeZone.getDefault());
+            Date dateFormat = df.parse(date);
+            return df.format(dateFormat);
+        } catch (ParseException e) {
+            // In case of error, no date displayed
+            return " ";
+        }
     }
 
 

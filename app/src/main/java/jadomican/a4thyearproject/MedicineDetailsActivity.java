@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import jadomican.a4thyearproject.data.Medicine;
 import jadomican.a4thyearproject.data.UserDetail;
@@ -50,6 +52,9 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
     private static final int QUERY_TOKEN = 1001;
     private static final int UPDATE_TOKEN = 1002;
+    // The timezone stored in the database is always the same, regardless of where the user of the
+    // app is located. This prevents ParseException occurring due to timezone differences
+    public static final String COMMON_TIMEZONE = "UTC";
 
     // A TextToSpeech engine for speaking a String value.
     private TextToSpeech tts;
@@ -196,7 +201,9 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
         if (isUpdated) {
             // Set the date that the medicine is added
-            DateFormat df = new SimpleDateFormat("dd/MMM/yyyy HH:mm z");
+            SimpleDateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT);
+            df.setTimeZone(TimeZone.getTimeZone(COMMON_TIMEZONE));
+
             Date now = Calendar.getInstance().getTime();
             medicine.setMedicineDate(df.format(now));
             updatedList.add(medicine);

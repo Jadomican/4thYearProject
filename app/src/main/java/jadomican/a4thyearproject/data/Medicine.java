@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import jadomican.a4thyearproject.MediApp;
 import jadomican.a4thyearproject.ProfileMedicineListActivity;
@@ -113,11 +114,12 @@ public class Medicine implements Serializable{
                 break;
             case ProfileMedicineListActivity.SORT_DATE:
                 Collections.sort(list, new Comparator<Medicine>() {
-                    DateFormat f = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT);
-
                     @Override
                     public int compare(Medicine m1, Medicine m2) {
                         try {
+                            // All dates are stored in the DB in UTC, maintaining compatibility
+                            DateFormat f = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT);
+                            f.setTimeZone(TimeZone.getTimeZone("UTC"));
                             return f.parse(m2.getMedicineDate()).compareTo(f.parse(m1.getMedicineDate()));
                         } catch (ParseException e) {
                             throw new IllegalArgumentException(e);

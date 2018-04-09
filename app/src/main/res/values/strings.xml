@@ -15,7 +15,7 @@
     <string name="view_profile_medicines">View Your Medicines</string>
     <string name="button_search_medicines">Search For Medicines</string>
     <string name="button_add_medicine">Add Medicine to Profile</string>
-    <string name="button_medicine_conflict">Conflict Detected!</string>
+    <string name="button_medicine_conflict">Add Medicine to Profile (Potential Conflict Detected!)</string>
     <string name="welcome">Welcome to MediApp</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
