@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/button_search_medicines"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Settings, always in the overflow -->
+    <item android:id="@+id/action_sort_name"
+        android:icon="@drawable/ic_action_settings"
+        android:title="Sort by name"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_sort_date"
+        android:icon="@drawable/ic_action_settings"
+        android:title="Sort by date"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_sort_type"
+        android:icon="@drawable/ic_action_settings"
+        android:title="Sort by type"
+        app:showAsAction="never"/>
+
+</menu>

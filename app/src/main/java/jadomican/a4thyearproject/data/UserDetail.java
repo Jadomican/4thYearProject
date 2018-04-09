@@ -57,7 +57,8 @@ public class UserDetail {
         //A list representing the user's added medicines
         List<Medicine> listMedicines = new ArrayList<>();
 
-        if (medicinesValue != null) {
+        // If addedMedicines is not equal to the default value
+        if (!medicinesValue.equals("")) {
 
             try {
                 JSONArray array = new JSONArray(medicinesValue);
@@ -72,7 +73,7 @@ public class UserDetail {
                     medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
                     medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
                     medicine.setMedicineConflict(element.get(MedicineListActivity.KEY_CONFLICT).toString());
-
+                    medicine.setMedicineDate(element.get(MedicineListActivity.KEY_DATE).toString());
                     listMedicines.add(medicine);
                 }
             } catch (JSONException e) {

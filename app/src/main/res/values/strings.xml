@@ -32,5 +32,10 @@
     <string name="medicine_search_info_message">"Perform a search for medicine in our database"</string>
     <string name="camera_info_title">"Camera Search"</string>
     <string name="camera_info_message">"Use the camera to scan text to search for medicines"</string>
+    <string name="date_added">"Added on "</string>
+    <string name="date_added_alt">"Added on %1$s"</string>
+    <string name="loading">"Loading Medicine"</string>
+    <string name="loading_many">"Loading Medicines"</string>
+
 
 </resources>

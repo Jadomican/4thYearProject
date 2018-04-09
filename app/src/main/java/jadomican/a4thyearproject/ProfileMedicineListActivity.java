@@ -4,15 +4,13 @@ import android.app.AlertDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,12 +25,14 @@ import android.widget.AdapterView;
 import android.widget.SimpleAdapter;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
+import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +52,16 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     private Uri itemUri;
     private DrawerLayout mDrawerLayout;
     NavigationView navigationView;
+    private TextView onsetActionView;
 
     private ContentResolver contentResolver;
 
     private static final int QUERY_TOKEN = 1001;
     private static final int UPDATE_TOKEN = 1002;
+    public static final String SORT_NAME = "name";
+    public static final String SORT_DATE = "date";
+    public static final String SORT_TYPE = "type";
+    public static final String DATE_FORMAT = "dd/MMM/yyyy HH:mm z";
 
     //private ListView mListView;
     SwipeMenuListView mListView;
@@ -206,15 +211,24 @@ public class ProfileMedicineListActivity extends AppCompatActivity
 
                 cursor.moveToFirst();
                 mItem = UserDetail.fromCursor(cursor);
-                populateAndLoadList();
+                populateAndLoadList(SORT_NAME);
             }
         };
         queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
     }
 
     // Populate and load the list displaying user medicines
-    private void populateAndLoadList() {
-        for (Medicine medicine : mItem.getAddedMedicines()) {
+    private void populateAndLoadList(String sortType) {
+        mMedicineMapList.clear();
+        List<Medicine> addedMedicines = new ArrayList<>(mItem.getAddedMedicines());
+        try {
+            addedMedicines = new ArrayList<>(Medicine.sort(mItem.getAddedMedicines(), sortType));
+        } catch (ParseException e)
+        {
+            Log.d("ProfileMedicineListAct", "A Parse Exception has occurred: " + e.getMessage());
+        }
+
+        for (Medicine medicine : addedMedicines) {
             HashMap<String, String> map = new HashMap<>();
             map.put(MedicineListActivity.KEY_ID, medicine.getMedicineId());
             map.put(MedicineListActivity.KEY_NAME, medicine.getMedicineName());
@@ -222,22 +236,28 @@ public class ProfileMedicineListActivity extends AppCompatActivity
             map.put(MedicineListActivity.KEY_ONSETACTION, medicine.getMedicineOnsetAction());
             map.put(MedicineListActivity.KEY_IMAGEURL, medicine.getMedicineImageUrl());
             map.put(MedicineListActivity.KEY_CONFLICT, medicine.getMedicineConflict());
+            map.put(MedicineListActivity.KEY_DATE, medicine.getMedicineDate());
+
             //For each medicine, add to list
             mMedicineMapList.add(map);
         }
         loadListView();
-
     }
 
     // Load (or reload) the list of medicines
     private void loadListView() {
         //The adapter which lists the medicines on the screen
+
+        Resources res = getResources();
+        String text = String.format(res.getString(R.string.date_added_alt), MedicineListActivity.KEY_ONSETACTION );
+
+
         adapter = new SimpleAdapter(
                 ProfileMedicineListActivity.this,
                 mMedicineMapList,
-                R.layout.list_item,
-                new String[]{MedicineListActivity.KEY_NAME, MedicineListActivity.KEY_TYPE},
-                new int[]{R.id.name, R.id.type});
+                R.layout.list_item_date,
+                new String[]{MedicineListActivity.KEY_NAME, MedicineListActivity.KEY_TYPE, MedicineListActivity.KEY_DATE},
+                new int[]{R.id.name, R.id.type, R.id.date});
         mListView.setAdapter(adapter);
     }
 
@@ -255,10 +275,6 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         arguments.putString(MedicineListActivity.KEY_IMAGEURL, mMedicineMapList.get(i).get(MedicineListActivity.KEY_IMAGEURL));
         arguments.putString(MedicineListActivity.KEY_CONFLICT, mMedicineMapList.get(i).get(MedicineListActivity.KEY_CONFLICT));
 
-//        Context context = view.getContext();
-//        Intent intent = new Intent(context, MedicineDetailsActivity.class);
-//        intent.putExtras(arguments);
-//        context.startActivity(intent);
         Log.d("profile", "touched");
     }
 
@@ -267,6 +283,18 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_search:
+                onSearchRequested();
+                return true;
+            case R.id.action_sort_name:
+                populateAndLoadList(SORT_NAME);
+                return true;
+            case R.id.action_sort_date:
+                populateAndLoadList(SORT_DATE);
+                return true;
+            case R.id.action_sort_type:
+                populateAndLoadList(SORT_TYPE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -297,7 +325,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bar_menu, menu);
+        inflater.inflate(R.menu.bar_menu_search, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

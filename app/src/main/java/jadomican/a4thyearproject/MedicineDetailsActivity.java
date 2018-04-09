@@ -1,11 +1,9 @@
 package jadomican.a4thyearproject;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,7 +29,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -83,7 +85,6 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         if (extras != null && extras.containsKey(UserDetailFragment.ARG_ITEM_ID)) {
             String itemId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
-
             //Populate the Medicine object based on the choice made by the user from the list
             medicine.setMedicineName(extras.getString(MedicineListActivity.KEY_NAME));
             medicine.setMedicineType(extras.getString(MedicineListActivity.KEY_TYPE));
@@ -131,7 +132,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            dialog.setMessage("Loading medicine..");
+            dialog.setMessage(getResources().getString(R.string.loading));
             dialog.show();
         }
 
@@ -194,6 +195,10 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         }
 
         if (isUpdated) {
+            // Set the date that the medicine is added
+            DateFormat df = new SimpleDateFormat("dd/MMM/yyyy HH:mm z");
+            Date now = Calendar.getInstance().getTime();
+            medicine.setMedicineDate(df.format(now));
             updatedList.add(medicine);
 
             mItem.setAddedMedicines(updatedList);
@@ -232,7 +237,6 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.action_search:
-                Log.d(MedicineDetailsActivity.class.getName(),"search");
                 onSearchRequested();
                 return true;
             case R.id.action_back:

@@ -21,6 +21,7 @@ import android.widget.SimpleAdapter;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class MedicineListActivity extends AppCompatActivity
 
     //List of HashMaps to represent the list of medicines to be displayed
     private List<HashMap<String, String>> mMedicineMapList = new ArrayList<>();
+    private List<Medicine> medicinesResponse;
 
     public static final String KEY_ID = "id";
     public static final String KEY_NAME = "name";
@@ -50,6 +52,7 @@ public class MedicineListActivity extends AppCompatActivity
     public static final String KEY_IMAGEURL = "imageurl";
     public static final String KEY_CONFLICT = "conflict";
     public static final String KEY_QUERY = "query";
+    public static final String KEY_DATE = "date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,15 +86,23 @@ public class MedicineListActivity extends AppCompatActivity
 
         // Invoke API and return results
         new LoadJSONTask(this,this).execute(URL);
-
     }
 
+    // Allow user to sort list of medicines if they choose
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("in", "INNNN");
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_search:
+                onSearchRequested();
+                return true;
+            case R.id.action_sort_name:
+                populateAndLoadList(ProfileMedicineListActivity.SORT_NAME);
+                return true;
+            case R.id.action_sort_type:
+                populateAndLoadList(ProfileMedicineListActivity.SORT_TYPE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -100,27 +111,39 @@ public class MedicineListActivity extends AppCompatActivity
     //The onLoaded() method is called when the request is successful
     @Override
     public void onLoaded(List<Medicine> medicineList) {
+        MediApp.customToast("Found " + medicineList.size() + " results");
+        medicinesResponse = medicineList;
+        populateAndLoadList(ProfileMedicineListActivity.SORT_NAME);
+    }
 
-        for (Medicine medicine : medicineList) {
+    // Populate and load the list displaying medicines
+    private void populateAndLoadList(String sortType) {
+        mMedicineMapList.clear();
+        try {
+            medicinesResponse = (Medicine.sort(medicinesResponse, sortType));
+        } catch (ParseException e)
+        {
+            Log.d("ProfileMedicineListAct", "A Parse Exception has occurred: " + e.getMessage());
+        }
+
+        for (Medicine medicine : medicinesResponse) {
             HashMap<String, String> map = new HashMap<>();
-            map.put(KEY_ID, medicine.getMedicineId());
-            map.put(KEY_NAME, medicine.getMedicineName());
-            map.put(KEY_TYPE, medicine.getMedicineType());
-            map.put(KEY_ONSETACTION, medicine.getMedicineOnsetAction());
-            map.put(KEY_IMAGEURL, medicine.getMedicineImageUrl());
-            map.put(KEY_CONFLICT, medicine.getMedicineConflict());
-
+            map.put(MedicineListActivity.KEY_ID, medicine.getMedicineId());
+            map.put(MedicineListActivity.KEY_NAME, medicine.getMedicineName());
+            map.put(MedicineListActivity.KEY_TYPE, medicine.getMedicineType());
+            map.put(MedicineListActivity.KEY_ONSETACTION, medicine.getMedicineOnsetAction());
+            map.put(MedicineListActivity.KEY_IMAGEURL, medicine.getMedicineImageUrl());
+            map.put(MedicineListActivity.KEY_CONFLICT, medicine.getMedicineConflict());
             //For each medicine, add to list
             mMedicineMapList.add(map);
         }
-
-        MediApp.customToast("Found " + medicineList.size() + " results");
         loadListView();
     }
 
+
     @Override
     public void onError() {
-        MediApp.customToast("Something went wrong");
+        MediApp.customToast("No medicines found");
     }
 
     @Override
@@ -150,8 +173,8 @@ public class MedicineListActivity extends AppCompatActivity
                 MedicineListActivity.this,
                 mMedicineMapList,
                 R.layout.list_item,
-                new String[]{KEY_NAME, KEY_TYPE, KEY_ONSETACTION},
-                new int[]{R.id.name, R.id.type, R.id.onsetaction});
+                new String[]{KEY_NAME, KEY_TYPE},
+                new int[]{R.id.name, R.id.type});
         mListView.setAdapter(adapter);
     }
 
@@ -176,7 +199,7 @@ public class MedicineListActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bar_menu, menu);
+        inflater.inflate(R.menu.bar_menu_search_no_date, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

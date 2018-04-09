@@ -1,14 +1,32 @@
 package jadomican.a4thyearproject.data;
 
+import android.content.res.Resources;
+import android.support.annotation.NonNull;
+
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBDocument;
 
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import jadomican.a4thyearproject.MediApp;
+import jadomican.a4thyearproject.ProfileMedicineListActivity;
+import jadomican.a4thyearproject.R;
 
 /**
  * A model to represent a medicine object.
  */
 @DynamoDBDocument
-public class Medicine implements Serializable {
+public class Medicine implements Serializable{
 
     private String id;
     private String name;
@@ -16,6 +34,15 @@ public class Medicine implements Serializable {
     private String onsetaction;
     private String imageurl;
     private String conflict;
+    private String date;
+
+    public String getMedicineDate() {
+        return date;
+    }
+
+    public void setMedicineDate(String date) {
+        this.date = date;
+    }
 
     public String getMedicineId() {
         return id;
@@ -64,4 +91,42 @@ public class Medicine implements Serializable {
     public void setMedicineConflict(String conflict) {
         this.conflict = conflict;
     }
+
+    // Method to allow various sorting algorithms on a list of medicines
+    public static List<Medicine> sort(List<Medicine> list, String sortType) throws ParseException {
+        switch (sortType) {
+            case ProfileMedicineListActivity.SORT_NAME:
+                Comparator<Medicine> nameOrder = new Comparator<Medicine>() {
+                    public int compare(Medicine m1, Medicine m2) {
+                        return m1.name.compareTo(m2.name);
+                    }
+                };
+                Collections.sort(list, nameOrder);
+                break;
+            case ProfileMedicineListActivity.SORT_TYPE:
+                Comparator<Medicine> typeOrder = new Comparator<Medicine>() {
+                    public int compare(Medicine m1, Medicine m2) {
+                        return m1.type.compareTo(m2.type);
+                    }
+                };
+                Collections.sort(list, typeOrder);
+                break;
+            case ProfileMedicineListActivity.SORT_DATE:
+                Collections.sort(list, new Comparator<Medicine>() {
+                    DateFormat f = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT);
+
+                    @Override
+                    public int compare(Medicine m1, Medicine m2) {
+                        try {
+                            return f.parse(m2.getMedicineDate()).compareTo(f.parse(m1.getMedicineDate()));
+                        } catch (ParseException e) {
+                            throw new IllegalArgumentException(e);
+                        }
+                    }
+                });
+                break;
+        }
+        return list;
+    }
+
 }

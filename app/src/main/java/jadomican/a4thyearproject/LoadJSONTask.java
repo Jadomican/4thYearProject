@@ -2,6 +2,7 @@ package jadomican.a4thyearproject;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -48,7 +49,7 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
 
     @Override
     protected void onPreExecute() {
-        this.dialog.setMessage("Loading medicines..");
+        this.dialog.setMessage(MediApp.getAppContext().getResources().getString(R.string.loading_many));
         this.dialog.show();
     }
 
@@ -59,11 +60,11 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
             Gson gson = new Gson();
             return gson.fromJson(stringResponse, MedicineResponse.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("LoadJSONTask", "An IOException has occurred" + e.getMessage());
             return null;
 
         } catch (JsonSyntaxException e) {
-            e.printStackTrace();
+            Log.d("LoadJSONTask", "A JsonSyntaxException has occurred" + e.getMessage());
             return null;
         }
     }

@@ -193,6 +193,7 @@ public class UserDetailsContentProvider extends ContentProvider {
                 medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
                 medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
                 medicine.setMedicineConflict(element.get(MedicineListActivity.KEY_CONFLICT).toString());
+                medicine.setMedicineDate(element.get(MedicineListActivity.KEY_DATE).toString());
 
                 listMedicines.add(medicine);
             }
