@@ -1,5 +1,6 @@
 package jadomican.a4thyearproject;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.Activity;
@@ -21,13 +22,12 @@ public class AuthenticatorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authenticator);
-
         final IdentityManager identityManager = AWSProvider.getInstance().getIdentityManager();
         // Set up the callbacks to handle the authentication response
         identityManager.setUpToAuthenticate(this, new DefaultSignInResultHandler() {
             @Override
             public void onSuccess(Activity activity, IdentityProvider identityProvider) {
-                MediApp.customToast("Logged in successfully");
+                MediApp.customToast(getResources().getString(R.string.logged_in));
                 // Go to the main activity
                 final Intent intent = new Intent(activity, MainActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -43,7 +43,8 @@ public class AuthenticatorActivity extends AppCompatActivity {
 
         // Start the authentication UI
         AuthUIConfiguration config = new AuthUIConfiguration.Builder()
-                .userPools(true)
+                .userPools(true).logoResId(R.drawable.mediapp_sign_in_round_alt)
+                .backgroundColor(Color.rgb(42, 112, 132))
                 .build();
         SignInActivity.startSignInActivity(this, config);
         AuthenticatorActivity.this.finish();

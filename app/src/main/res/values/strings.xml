@@ -36,6 +36,7 @@
     <string name="date_added_alt">"Added on %1$s"</string>
     <string name="loading">"Loading Medicine"</string>
     <string name="loading_many">"Loading Medicines"</string>
+    <string name="logged_in">"Logged in successfully"</string>
 
 
 </resources>
