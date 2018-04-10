@@ -173,7 +173,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         medicineNameDisplay.setText(medicine.getMedicineName());
         String buttonText = getString(R.string.button_add_medicine);
         for (Medicine addedMedicine : mItem.getAddedMedicines()) {
-            if (addedMedicine.getMedicineConflict().equals(medicine.getMedicineName()))
+            if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()))
             {
                 buttonText = getString(R.string.button_medicine_conflict);
                 //getColor is deprecated as of API 23, use ContextCompat instead

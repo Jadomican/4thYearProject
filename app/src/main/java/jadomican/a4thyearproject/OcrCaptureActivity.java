@@ -79,8 +79,8 @@ public final class OcrCaptureActivity extends AppCompatActivity {
     private CameraSourcePreview mPreview;
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
 
-    NavigationView navigationView;
-    private DrawerLayout mDrawerLayout;
+//    NavigationView navigationView;
+//    private DrawerLayout mDrawerLayout;
 
 
     // Gesture Detectors interpret screen taps, swipes, etc.
@@ -92,18 +92,18 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ocr_capture);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.nav_camera);
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setCheckedItem(R.id.nav_camera);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+//        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
-        MediApp.setNavigationListener(navigationView, mDrawerLayout, R.id.nav_camera, this);
+        //MediApp.setNavigationListener(navigationView, mDrawerLayout, R.id.nav_camera, this);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
@@ -197,7 +197,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        navigationView.setCheckedItem(R.id.nav_camera);
+        //navigationView.setCheckedItem(R.id.nav_camera);
         startCameraSource();
     }
 
@@ -224,7 +224,8 @@ public final class OcrCaptureActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                //mDrawerLayout.openDrawer(GravityCompat.START);
+                onBackPressed();
                 return true;
             case R.id.action_search:
                 onSearchRequested();
@@ -234,14 +235,14 @@ public final class OcrCaptureActivity extends AppCompatActivity {
     }
 
     // Open the navigation bar when pressing the back button
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawers();
-        } else {
-            mDrawerLayout.openDrawer(GravityCompat.START);
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+//            mDrawerLayout.closeDrawers();
+//        } else {
+//            mDrawerLayout.openDrawer(GravityCompat.START);
+//        }
+//    }
 
     // Add the additional action bar items based on the xml defined menu
     @Override
@@ -323,7 +324,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         TextBlock text = null;
         if (graphic != null) {
             text = graphic.getTextBlock();
-            // Extract text values from the block touched and search for medicines based
+            // Extract text values from the blocked touched and search for medicines
             if (text != null && text.getValue() != null) {
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, MedicineListActivity.class);

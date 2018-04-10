@@ -145,6 +145,14 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_search:
                 onSearchRequested();
                 return true;
+            case R.id.log_out:
+                Context context = getApplicationContext();
+                Intent intent = new Intent(context, AuthenticatorActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                context.startActivity(intent);
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

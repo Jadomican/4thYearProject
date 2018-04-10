@@ -88,7 +88,8 @@
         <activity
             android:name=".OcrCaptureActivity"
             android:label="Read Text"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/CamTheme"
+            android:parentActivityName=".MainActivity">
 
             <meta-data android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />

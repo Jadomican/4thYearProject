@@ -121,7 +121,7 @@ public class UserDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        saveData();
+        //saveData();
     }
 
     /**

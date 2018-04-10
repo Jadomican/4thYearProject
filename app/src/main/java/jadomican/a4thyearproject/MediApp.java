@@ -97,12 +97,13 @@ public class MediApp extends Application {
     }
 
     // Return a properly formatted date based on the user's device settings
-    static DateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT);
+    static DateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT_NO_ZONE);
     public static String getFormattedDate(String date) {
         try {
             df.setTimeZone(TimeZone.getDefault());
             Date dateFormat = df.parse(date);
             return df.format(dateFormat);
+            //return df.format(df.parse(date));
         } catch (ParseException e) {
             // In case of error, no date displayed
             return " ";

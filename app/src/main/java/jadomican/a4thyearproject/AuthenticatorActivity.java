@@ -1,5 +1,6 @@
 package jadomican.a4thyearproject;
 
+import android.app.ProgressDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -32,11 +33,17 @@ public class AuthenticatorActivity extends AppCompatActivity {
     private static final int UPDATE_TOKEN = 1002;
     private static final int INSERT_TOKEN = 1003;
     private Activity successfulSignInActivity;
+    private ProgressDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authenticator);
+        dialog = new ProgressDialog(this);
+        dialog.setMessage(getResources().getString(R.string.loading_sign_in));
+        dialog.show();
+        Log.d("after dialog", "dialog");
         final IdentityManager identityManager = AWSProvider.getInstance().getIdentityManager();
         // Set up the callbacks to handle the authentication response
         identityManager.setUpToAuthenticate(this, new DefaultSignInResultHandler() {
@@ -102,6 +109,9 @@ public class AuthenticatorActivity extends AppCompatActivity {
     }
 
     private void goToMainActivity() {
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
         MediApp.customToast(getResources().getString(R.string.logged_in));
         final Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         successfulSignInActivity.startActivity(intent);

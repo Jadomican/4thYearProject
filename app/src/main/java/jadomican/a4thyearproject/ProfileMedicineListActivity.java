@@ -1,6 +1,7 @@
 package jadomican.a4thyearproject;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -20,8 +21,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.BounceInterpolator;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +42,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jadomican.a4thyearproject.data.Medicine;
 import jadomican.a4thyearproject.data.UserDetail;
@@ -65,6 +69,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     public static final String SORT_DATE = "date";
     public static final String SORT_TYPE = "type";
     public static final String DATE_FORMAT = "dd/MMM/yyyy HH:mm z";
+    public static final String DATE_FORMAT_NO_ZONE = "dd/MMM/yyyy HH:mm";
     public static final String KEY_DATE_FORMAT = "formattedDate";
 
     //private ListView mListView;
@@ -140,6 +145,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 // index is the position of the swipe menu item chosen by user
                 switch (index) {
                     case 0:
+                        showConflicts(mMedicineMapList, position);
                         Log.d("swipe", "onMenuItemClick: clicked item " + position);
                         break;
                     case 1:
@@ -278,19 +284,40 @@ public class ProfileMedicineListActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        showConflicts(mMedicineMapList, i);
+    }
 
-        Bundle arguments = new Bundle();
+    // Determine whether (or not) there are any potential conflicts between the currently added
+    // medicines in the profile
+    private void showConflicts(List<HashMap<String, String>> medicines, int position) {
+        String currentMedicine = medicines.get(position).get(MedicineListActivity.KEY_NAME);
+        AlertDialog alertDialog = new AlertDialog.Builder(ProfileMedicineListActivity.this).create();
+        alertDialog.setTitle(currentMedicine);
+        StringBuilder activeConflicts = new StringBuilder("");
 
-        arguments.putString(UserDetailFragment.ARG_ITEM_ID, AWSProvider.getInstance().getIdentityManager().getCachedUserID());
+        for (HashMap<String, String> hashMap : medicines) {
+            for (Map.Entry<String, String> entry : hashMap.entrySet()) {
+                // If the selected medicine is contained in the conflicts of another medicine in the profile,
+                // we determine that a conflict has occurred
+                if (entry.getKey().equals(MedicineListActivity.KEY_CONFLICT) && entry.getValue().contains(currentMedicine)) {
+                    activeConflicts.append(hashMap.get(MedicineListActivity.KEY_NAME)).append(" ");
+                }
+            }
 
-        arguments.putString(MedicineListActivity.KEY_NAME, mMedicineMapList.get(i).get(MedicineListActivity.KEY_NAME));
-        arguments.putString(MedicineListActivity.KEY_TYPE, mMedicineMapList.get(i).get(MedicineListActivity.KEY_TYPE));
-        arguments.putString(MedicineListActivity.KEY_ONSETACTION, mMedicineMapList.get(i).get(MedicineListActivity.KEY_ONSETACTION));
-        arguments.putString(MedicineListActivity.KEY_ID, mMedicineMapList.get(i).get(MedicineListActivity.KEY_ID));
-        arguments.putString(MedicineListActivity.KEY_IMAGEURL, mMedicineMapList.get(i).get(MedicineListActivity.KEY_IMAGEURL));
-        arguments.putString(MedicineListActivity.KEY_CONFLICT, mMedicineMapList.get(i).get(MedicineListActivity.KEY_CONFLICT));
+        }
+        if (!activeConflicts.toString().equals("")) {
+            alertDialog.setMessage("Potential Conflict: " + activeConflicts.toString().trim().replace(" ", ", "));
+        } else {
+            alertDialog.setMessage("No Conflicts Detected");
+        }
 
-        Log.d("profile", "touched");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     @Override
@@ -347,3 +374,4 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     }
 
 }
+
