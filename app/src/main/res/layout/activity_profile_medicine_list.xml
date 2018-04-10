@@ -26,8 +26,16 @@
             android:id="@+id/profile_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"/>
+            android:layout_below="@id/toolbar" />
 
+        <TextView
+            android:id="@+id/no_medicines"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/no_medicines"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

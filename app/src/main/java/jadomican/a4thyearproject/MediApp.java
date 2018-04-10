@@ -50,7 +50,7 @@ public class MediApp extends Application {
     }
 
     // Re-usable code to set the listener for clicking a navigation menu item. This method is called
-    // in all activities use the menu navigation bar as opposed to implementing this code in each activity
+    // in all activities that use the menu navigation bar as opposed to implementing this code in each activity
     public static void setNavigationListener(NavigationView navigationView, final DrawerLayout drawerLayout, final int currentMenuItemId, final AppCompatActivity act) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {

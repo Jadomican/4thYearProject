@@ -323,8 +323,8 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         TextBlock text = null;
         if (graphic != null) {
             text = graphic.getTextBlock();
+            // Extract text values from the block touched and search for medicines based
             if (text != null && text.getValue() != null) {
-                //Context context = view.getContext();
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, MedicineListActivity.class);
                 intent.putExtra(MedicineListActivity.KEY_QUERY, text.getValue().toLowerCase());

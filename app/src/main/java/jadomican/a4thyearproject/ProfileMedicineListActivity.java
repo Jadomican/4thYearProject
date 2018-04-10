@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
@@ -31,6 +32,8 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+
+import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -180,12 +183,13 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         // Remove the specified medicine from the list
         List<Medicine> updatedList = new ArrayList<>(mItem.getAddedMedicines());
         Medicine toRemove = new Medicine();
-        for(Medicine medicine: updatedList){
-            if(medicine.getMedicineName().equalsIgnoreCase(medicineToRemove)){
+        for (Medicine medicine : updatedList) {
+            if (medicine.getMedicineName().equalsIgnoreCase(medicineToRemove)) {
                 toRemove = medicine;
             }
         }
         updatedList.remove(toRemove);
+        determineEmptyList(updatedList);
         mItem.setAddedMedicines(updatedList);
         // Convert to ContentValues and store in the database.
         ContentValues values = mItem.toContentValues();
@@ -222,10 +226,10 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     private void populateAndLoadList(String sortType) {
         mMedicineMapList.clear();
         List<Medicine> addedMedicines = new ArrayList<>(mItem.getAddedMedicines());
+        determineEmptyList(addedMedicines);
         try {
             addedMedicines = new ArrayList<>(Medicine.sort(mItem.getAddedMedicines(), sortType));
-        } catch (ParseException e)
-        {
+        } catch (ParseException e) {
             Log.d("ProfileMedicineListAct", "A Parse Exception has occurred: " + e.getMessage());
         }
 
@@ -243,7 +247,17 @@ public class ProfileMedicineListActivity extends AppCompatActivity
             //For each medicine, add to list
             mMedicineMapList.add(map);
         }
+        Log.d("ProfileMeds", "Size" + Integer.toString(mMedicineMapList.size()));
         loadListView();
+    }
+
+    private void determineEmptyList(List<Medicine> list) {
+        TextView noMedicines = (TextView) findViewById(R.id.no_medicines);
+        if (list.size() <= 0) {
+            noMedicines.setVisibility(View.VISIBLE);
+        } else {
+            noMedicines.setVisibility(View.GONE);
+        }
     }
 
     // Load (or reload) the list of medicines
@@ -251,8 +265,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         //The adapter which lists the medicines on the screen
 
         Resources res = getResources();
-        String text = String.format(res.getString(R.string.date_added_alt), MedicineListActivity.KEY_ONSETACTION );
-
+        String text = String.format(res.getString(R.string.date_added_alt), MedicineListActivity.KEY_ONSETACTION);
 
         adapter = new SimpleAdapter(
                 ProfileMedicineListActivity.this,
@@ -303,11 +316,13 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         navigationView.setCheckedItem(R.id.nav_profile_medicines);
         // Refresh the list on activity resume with latest details
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
         mMedicineMapList.clear();
         syncUser();
     }

@@ -61,6 +61,7 @@
         </activity>
         <activity
             android:name=".MedicineListActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_medicine_list"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

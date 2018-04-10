@@ -20,7 +20,9 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
+import android.widget.TextView;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
@@ -36,8 +38,10 @@ public class MedicineListActivity extends AppCompatActivity
         implements LoadJSONTask.Listener, AdapterView.OnItemClickListener {
 
     private ListView mListView;
+    SimpleAdapter adapter;
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
+    private String query;
     //The url from which to invoke the API and fetch the JSON result
     public String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
 
@@ -72,21 +76,37 @@ public class MedicineListActivity extends AppCompatActivity
 
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setOnItemClickListener(this);
+        getIntentAndLoad();
+    }
 
+    private void getIntentAndLoad() {
         // Get the intent, verify that a search occurred
+        String queryURL = "";
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = intent.getStringExtra(SearchManager.QUERY).trim();
             // Append the query to the URL
-            URL += "/" + intent.getStringExtra(SearchManager.QUERY);
+            queryURL = (URL + "/" + query.toLowerCase());
             Log.d("Search", "SEARCHED:" + URL);
+        } else if (intent.getStringExtra(MedicineListActivity.KEY_QUERY) != null) {
+            query = intent.getStringExtra(MedicineListActivity.KEY_QUERY);
+            queryURL = (URL + "/" + query.toLowerCase());
         }
-        else if (intent.getStringExtra(MedicineListActivity.KEY_QUERY) != null) {
-            URL += "/" + intent.getStringExtra(MedicineListActivity.KEY_QUERY);
-        }
-
         // Invoke API and return results
-        new LoadJSONTask(this,this).execute(URL);
+        new LoadJSONTask(this, this).execute(queryURL);
     }
+
+    // Allow user to re-search within search results page
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+        getIntentAndLoad();
+    }
+
 
     // Allow user to sort list of medicines if they choose
     @Override
@@ -111,7 +131,17 @@ public class MedicineListActivity extends AppCompatActivity
     //The onLoaded() method is called when the request is successful
     @Override
     public void onLoaded(List<Medicine> medicineList) {
-        MediApp.customToast("Found " + medicineList.size() + " results");
+        TextView noResults = (TextView) findViewById(R.id.no_results);
+        if (medicineList.size() > 0) {
+            MediApp.customToast("Found " + medicineList.size() + " results");
+            noResults.setVisibility(View.GONE);
+        }
+        else
+        {
+            noResults.setVisibility(View.VISIBLE);
+            noResults.setText(getString(R.string.no_results, query));
+        }
+
         medicinesResponse = medicineList;
         populateAndLoadList(ProfileMedicineListActivity.SORT_NAME);
     }
@@ -121,8 +151,7 @@ public class MedicineListActivity extends AppCompatActivity
         mMedicineMapList.clear();
         try {
             medicinesResponse = (Medicine.sort(medicinesResponse, sortType));
-        } catch (ParseException e)
-        {
+        } catch (ParseException e) {
             Log.d("ProfileMedicineListAct", "A Parse Exception has occurred: " + e.getMessage());
         }
 
@@ -169,7 +198,7 @@ public class MedicineListActivity extends AppCompatActivity
     private void loadListView() {
 
         //The adapter which lists the medicines on the screen
-        ListAdapter adapter = new SimpleAdapter(
+        adapter = new SimpleAdapter(
                 MedicineListActivity.this,
                 mMedicineMapList,
                 R.layout.list_item,
@@ -179,8 +208,7 @@ public class MedicineListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
     }
 

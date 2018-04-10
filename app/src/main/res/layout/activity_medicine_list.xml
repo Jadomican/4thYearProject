@@ -28,6 +28,16 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"/>
 
+        <TextView
+            android:id="@+id/no_results"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/no_results"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+
+
     </RelativeLayout>
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
