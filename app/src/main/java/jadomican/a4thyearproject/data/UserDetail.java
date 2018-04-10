@@ -48,7 +48,14 @@ public class UserDetail {
      * @return the profile stored in the cursor.
      */
     public static UserDetail fromCursor(Cursor c) {
+
         UserDetail userDetail = new UserDetail();
+        if (c.isAfterLast())
+        {
+            Log.d("CURSOR", "IS AFTER LAST");
+            return userDetail;
+        }
+
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
         userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
 
