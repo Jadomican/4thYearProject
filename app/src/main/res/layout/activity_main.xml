@@ -16,13 +16,7 @@
         android:background="@drawable/gradient_background"
         tools:context="jadomican.a4thyearproject.MainActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:theme="@style/appBarTheme" />
-
+        <include layout="@layout/toolbar"/>
 
         <TextView
             android:id="@+id/welcome_app"

@@ -112,7 +112,7 @@ public class AuthenticatorActivity extends AppCompatActivity {
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
-        MediApp.customToast(getResources().getString(R.string.logged_in));
+        MediApp.customToast(getResources().getString(R.string.logged_in), MediApp.KEY_POSITIVE);
         final Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         successfulSignInActivity.startActivity(intent);
         successfulSignInActivity.finish();

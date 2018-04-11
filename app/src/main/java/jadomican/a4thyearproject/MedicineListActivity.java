@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,14 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 import android.widget.TextView;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
@@ -133,7 +130,7 @@ public class MedicineListActivity extends AppCompatActivity
     public void onLoaded(List<Medicine> medicineList) {
         TextView noResults = (TextView) findViewById(R.id.no_results);
         if (medicineList.size() > 0) {
-            MediApp.customToast("Found " + medicineList.size() + " results");
+            MediApp.customToast("Found " + medicineList.size() + " results", MediApp.KEY_POSITIVE);
             noResults.setVisibility(View.GONE);
         }
         else
@@ -169,10 +166,11 @@ public class MedicineListActivity extends AppCompatActivity
         loadListView();
     }
 
-
+    // Called if there is an error when trying to query the API. For example, this could arise from
+    // a malformed URL which is not accepted by the API
     @Override
     public void onError() {
-        MediApp.customToast("No medicines found");
+        MediApp.customToast("No medicines found", MediApp.KEY_NEGATIVE);
     }
 
     @Override

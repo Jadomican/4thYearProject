@@ -14,13 +14,7 @@
         android:layout_height="match_parent"
         tools:context="jadomican.a4thyearproject.MedicineListActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:theme="@style/appBarTheme"
-            android:minHeight="?attr/actionBarSize" />
+        <include layout="@layout/toolbar"/>
 
         <ListView
             android:id="@+id/list_view"

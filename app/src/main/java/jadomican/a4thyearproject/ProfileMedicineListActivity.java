@@ -205,7 +205,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
             protected void onUpdateComplete(int token, Object cookie, int result) {
                 super.onUpdateComplete(token, cookie, result);
                 Log.d("MedicineDetailsActivity", "update completed");
-                MediApp.customToast("Deleted");
+                MediApp.customToast("Deleted", MediApp.KEY_POSITIVE);
             }
         };
         queryHandler.startUpdate(UPDATE_TOKEN, null, itemUri, values, null, null);

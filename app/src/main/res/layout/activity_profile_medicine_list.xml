@@ -15,12 +15,7 @@
         android:layout_height="match_parent"
         tools:context="jadomican.a4thyearproject.ProfileMedicineListActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:theme="@style/appBarTheme" />
+        <include layout="@layout/toolbar"/>
 
         <com.baoyz.swipemenulistview.SwipeMenuListView
             android:id="@+id/profile_list_view"

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -27,6 +26,8 @@ import java.util.TimeZone;
 // Simple class used to statically get application context
 public class MediApp extends Application {
 
+    public static final String KEY_NEGATIVE = "negative";
+    public static final String KEY_POSITIVE = "positive";
     private static Context context;
 
     public void onCreate() {
@@ -39,11 +40,18 @@ public class MediApp extends Application {
     }
 
     // Re-use this code wherever a toast is to be called
-    public static void customToast(String message) {
+    public static void customToast(String message, String type) {
         Toast toast = Toast.makeText(getAppContext(), message, Toast.LENGTH_LONG);
         View view = toast.getView();
         // Set toast BG colour
-        view.getBackground().setColorFilter(Color.rgb(0, 153, 255), PorterDuff.Mode.SRC_IN);
+        switch(type) {
+            case KEY_NEGATIVE:
+                view.getBackground().setColorFilter(Color.rgb(219, 68, 55), PorterDuff.Mode.SRC_IN);
+                break;
+            case KEY_POSITIVE:
+                view.getBackground().setColorFilter(Color.rgb(0, 153, 255), PorterDuff.Mode.SRC_IN);
+                break;
+        }
         TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
         toastMessage.setTextColor(Color.WHITE);
         toast.show();

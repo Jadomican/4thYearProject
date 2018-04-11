@@ -105,7 +105,7 @@ public class UserDetail {
      * @return the value of the key
      */
     private static String getString(Cursor c, String col, String defaultValue) {
-        if (c.getColumnIndex(col) >= 0) {
+        if (c.getColumnIndex(col) >= 0 && c.getString(c.getColumnIndex(col)) != null) {
             return c.getString(c.getColumnIndex(col));
         } else {
             return defaultValue;

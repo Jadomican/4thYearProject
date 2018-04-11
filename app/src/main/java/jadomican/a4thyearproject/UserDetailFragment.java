@@ -10,7 +10,6 @@ package jadomican.a4thyearproject;
         import android.content.ContentValues;
         import android.database.Cursor;
         import android.net.Uri;
-        import android.os.Handler;
         import android.os.Bundle;
         import android.support.v4.app.Fragment;
         import android.util.Log;
@@ -23,8 +22,6 @@ package jadomican.a4thyearproject;
 
         import jadomican.a4thyearproject.data.UserDetail;
         import jadomican.a4thyearproject.data.UserDetailsContentContract;
-        import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsClient;
-        import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsEvent;
 
         import java.util.Calendar;
 
@@ -91,60 +88,67 @@ public class UserDetailFragment extends Fragment {
         if (arguments != null && arguments.containsKey(ARG_ITEM_ID)) {
             String itemId = getArguments().getString(ARG_ITEM_ID);
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
-
-            // Replace local cursor methods with async query handling
-            AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
-                @Override
-                protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-                    super.onQueryComplete(token, cookie, cursor);
-                    cursor.moveToFirst();
-                    mItem = UserDetail.fromCursor(cursor);
-                    isUpdate = true;
-
-                    editDateOfBirth.setText(mItem.getDateOfBirth());
-                    editBio.setText(mItem.getBio());
-                    editFirstName.setText(mItem.getFirstName());
-                    editLastName.setText(mItem.getLastName());
-                }
-            };
-            queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
-
+            syncUser();
         } else {
             isUpdate = false;
         }
     }
 
-    /**
-     * Lifecycle event handler - called when the fragment is paused.  Use this to do any
-     * saving of data as it is the last opportunity to reliably do so.
-     */
+    // Sync user profile with the latest details from the database
+    public void syncUser() {
+        // Network tasks must not be performed in the UI thread. Hence the Async Task used here
+        AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
+            @Override
+            protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+                super.onQueryComplete(token, cookie, cursor);
+                cursor.moveToFirst();
+                mItem = UserDetail.fromCursor(cursor);
+                isUpdate = true;
+
+                editDateOfBirth.setText(mItem.getDateOfBirth());
+                editBio.setText(mItem.getBio());
+                editFirstName.setText(mItem.getFirstName());
+                editLastName.setText(mItem.getLastName());
+            }
+        };
+        queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
+
+    }
+
+    // Handle the fragment being paused
     @Override
     public void onPause() {
         super.onPause();
-        //saveData();
     }
 
     /**
      * Save the data from the form back into the database.
      */
     private void saveData() {
-        // Save the edited text back to the item.
         boolean isUpdated = false;
-        if (!mItem.getDateOfBirth().equals(editDateOfBirth.getText().toString().trim())) {
-            mItem.setDateOfBirth(editDateOfBirth.getText().toString().trim());
-            isUpdated = true;
-        }
-        if (!mItem.getBio().equals(editBio.getText().toString().trim())) {
-            mItem.setBio(editBio.getText().toString().trim());
-            isUpdated = true;
-        }
-        if (!mItem.getFirstName().equals(editFirstName.getText().toString().trim())) {
+
+        // Here we determine whether or not the user has updated the details in any of the profile
+        // fields. If not we inform the user and abort the unnecessary update network operation
+        if (!editFirstName.getText().toString().trim().equals(mItem.getFirstName())) {
             mItem.setFirstName(editFirstName.getText().toString().trim());
             isUpdated = true;
+            Log.d("Profile Change","fName");
         }
-        if (!mItem.getLastName().equals(editLastName.getText().toString().trim())) {
+        if (!editLastName.getText().toString().trim().equals(mItem.getLastName().trim())) {
             mItem.setLastName(editLastName.getText().toString().trim());
             isUpdated = true;
+            Log.d("Profile Change","lName");
+        }
+        if (!editDateOfBirth.getText().toString().trim().equals(mItem.getDateOfBirth())) {
+            mItem.setDateOfBirth(editDateOfBirth.getText().toString().trim());
+            isUpdated = true;
+            Log.d("Profile Change","dob");
+
+        }
+        if (!editBio.getText().toString().trim().equals(mItem.getBio())) {
+            mItem.setBio(editBio.getText().toString().trim());
+            isUpdated = true;
+            Log.d("Profile Change","bio");
         }
 
         // Convert to ContentValues and store in the database.
@@ -155,14 +159,14 @@ public class UserDetailFragment extends Fragment {
                 @Override
                 protected void onInsertComplete(int token, Object cookie, Uri uri) {
                     super.onInsertComplete(token, cookie, uri);
-                    MediApp.customToast("Details Saved");
+                    MediApp.customToast("Details Saved", MediApp.KEY_POSITIVE);
                     Log.d("UserDetailFragment", "insert completed");
                 }
 
                 @Override
                 protected void onUpdateComplete(int token, Object cookie, int result) {
                     super.onUpdateComplete(token, cookie, result);
-                    MediApp.customToast("Details Saved");
+                    MediApp.customToast("Details Saved", MediApp.KEY_POSITIVE);
                     Log.d("UserDetailFragment", "update completed");
                 }
             };
@@ -173,25 +177,27 @@ public class UserDetailFragment extends Fragment {
                 queryHandler.startInsert(INSERT_TOKEN, null, UserDetailsContentContract.UserDetails.CONTENT_URI, values);
                 //isUpdate = true;    // Anything from now on is an update
 
-                // Send Custom Event to Amazon Pinpoint
-                final AnalyticsClient mgr = AWSProvider.getInstance()
-                        .getPinpointManager()
-                        .getAnalyticsClient();
-                final AnalyticsEvent evt = mgr.createEvent("AddProfile")
-                        .withAttribute("profileId", mItem.getProfileId());
-                mgr.recordEvent(evt);
-                mgr.submitEvents();
+//                // Send Custom Event to Amazon Pinpoint
+//                final AnalyticsClient mgr = AWSProvider.getInstance()
+//                        .getPinpointManager()
+//                        .getAnalyticsClient();
+//                final AnalyticsEvent evt = mgr.createEvent("AddProfile")
+//                        .withAttribute("profileId", mItem.getProfileId());
+//                mgr.recordEvent(evt);
+//                mgr.submitEvents();
             }
+        }
+        else {
+            MediApp.customToast("No Changes Made", MediApp.KEY_NEGATIVE);
         }
     }
 
-    /**
-     * Returns the current profile.
-     * @return the current data
-     */
-    public UserDetail getUserDetails() {
-        return mItem;
+    @Override
+    public void onResume() {
+        super.onResume();
+        syncUser();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

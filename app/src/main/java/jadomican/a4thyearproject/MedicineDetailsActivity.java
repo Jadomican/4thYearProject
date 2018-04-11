@@ -29,8 +29,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -194,7 +192,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
             if (addedMedicine.getMedicineName().equals(medicine.getMedicineName()))
             {
-                MediApp.customToast(addedMedicine.getMedicineName() + " has already been added!");
+                MediApp.customToast(addedMedicine.getMedicineName() + " has already been added!", MediApp.KEY_NEGATIVE);
                 isUpdated = false;
             }
         }
@@ -216,14 +214,14 @@ public class MedicineDetailsActivity extends AppCompatActivity {
                 @Override
                 protected void onInsertComplete(int token, Object cookie, Uri uri) {
                     super.onInsertComplete(token, cookie, uri);
-                    MediApp.customToast("Medicine Added");
+                    MediApp.customToast("Medicine Added", MediApp.KEY_POSITIVE);
                     Log.d("MedicineDetailsActivity", "insert completed");
                 }
 
                 @Override
                 protected void onUpdateComplete(int token, Object cookie, int result) {
                     super.onUpdateComplete(token, cookie, result);
-                    MediApp.customToast("Medicine Added");
+                    MediApp.customToast("Medicine Added", MediApp.KEY_POSITIVE);
                     Log.d("MedicineDetailsActivity", "update completed");
                 }
             };
