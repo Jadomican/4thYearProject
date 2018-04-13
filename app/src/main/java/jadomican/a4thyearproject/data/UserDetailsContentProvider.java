@@ -10,13 +10,9 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
@@ -24,14 +20,12 @@ import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import jadomican.a4thyearproject.AWSProvider;
-import jadomican.a4thyearproject.MedicineListActivity;
+import jadomican.a4thyearproject.MediApp;
 
 /**
  * The Content Provider for the internal user-detail database
@@ -176,33 +170,7 @@ public class UserDetailsContentProvider extends ContentProvider {
 
     private UserDetailDO toUserDetailDO(ContentValues values) {
         final UserDetailDO userDetail = new UserDetailDO();
-
-        //The String representing all of the added medicines
-        String medicinesValue = values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES);
-        List<Medicine> listMedicines = new ArrayList<>();
-        try {
-            JSONArray array = new JSONArray(medicinesValue);
-
-            //Add each medicine to the list
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject element = array.getJSONObject(i);
-                Medicine medicine = new Medicine();
-                medicine.setMedicineName(element.get(MedicineListActivity.KEY_NAME).toString());
-                medicine.setMedicineOnsetAction(element.get(MedicineListActivity.KEY_ONSETACTION).toString());
-                medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
-                medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
-                medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
-                medicine.setMedicineConflict(element.get(MedicineListActivity.KEY_CONFLICT).toString());
-                medicine.setMedicineDate(element.get(MedicineListActivity.KEY_DATE).toString());
-
-                listMedicines.add(medicine);
-            }
-
-        } catch (JSONException e) {
-            Log.d("UserDetailsProvider", "A JSONException has occurred: " + e.toString());
-        }
-
-        userDetail.setAddedMedicines(listMedicines);
+        userDetail.setAddedMedicines(MediApp.medicineStringToList(values.getAsString(UserDetailsContentContract.UserDetails.ADDEDMEDICINES)));
         userDetail.setBio(values.getAsString(UserDetailsContentContract.UserDetails.BIO));
         userDetail.setDateOfBirth(values.getAsString(UserDetailsContentContract.UserDetails.DATEOFBIRTH));
         userDetail.setFirstName(values.getAsString(UserDetailsContentContract.UserDetails.FIRSTNAME));

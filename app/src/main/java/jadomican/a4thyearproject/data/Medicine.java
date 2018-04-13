@@ -27,7 +27,7 @@ import jadomican.a4thyearproject.R;
  * A model to represent a medicine object.
  */
 @DynamoDBDocument
-public class Medicine implements Serializable{
+public class Medicine implements Serializable {
 
     private String id;
     private String name;
@@ -36,6 +36,18 @@ public class Medicine implements Serializable{
     private String imageurl;
     private String conflict;
     private String date;
+
+    public Medicine() {}
+
+    public Medicine(String id, String name, String type, String onsetaction, String imageurl, String conflict, String date) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.onsetaction = onsetaction;
+        this.imageurl = imageurl;
+        this.conflict = conflict;
+        this.date = date;
+    }
 
     public String getMedicineDate() {
         return date;

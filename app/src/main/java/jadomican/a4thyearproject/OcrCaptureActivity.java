@@ -226,6 +226,8 @@ public final class OcrCaptureActivity extends AppCompatActivity {
             case android.R.id.home:
                 //mDrawerLayout.openDrawer(GravityCompat.START);
                 onBackPressed();
+                //moveTaskToBack(true);
+
                 return true;
             case R.id.action_search:
                 onSearchRequested();

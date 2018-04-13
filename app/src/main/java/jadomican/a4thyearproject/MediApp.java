@@ -8,16 +8,27 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
+
+import jadomican.a4thyearproject.data.Medicine;
+import jadomican.a4thyearproject.data.UserDetail;
 
 /**
  * Created by jadom on 05/04/2018.
@@ -44,7 +55,7 @@ public class MediApp extends Application {
         Toast toast = Toast.makeText(getAppContext(), message, Toast.LENGTH_LONG);
         View view = toast.getView();
         // Set toast BG colour
-        switch(type) {
+        switch (type) {
             case KEY_NEGATIVE:
                 view.getBackground().setColorFilter(Color.rgb(219, 68, 55), PorterDuff.Mode.SRC_IN);
                 break;
@@ -106,6 +117,7 @@ public class MediApp extends Application {
 
     // Return a properly formatted date based on the user's device settings
     static DateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT_NO_ZONE);
+
     public static String getFormattedDate(String date) {
         try {
             df.setTimeZone(TimeZone.getDefault());
@@ -118,6 +130,37 @@ public class MediApp extends Application {
         }
     }
 
+    // The dynamoDB database returns all values as Strings. This is a helper method to be called
+    // when a conversion to List format is required.
+    public static List<Medicine> medicineStringToList(String stringList) {
+        List<Medicine> listMedicines = new ArrayList<>();
+        // In case of String being null, return empty list
+        if (TextUtils.isEmpty(stringList)) {
+            return listMedicines;
+        }
 
+        // If String is not null, convert to a Medicine List and return
+        try {
+            JSONArray array = new JSONArray(stringList);
+            //Add each medicine to the list
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject element = array.getJSONObject(i);
+                Medicine medicine = new Medicine(
+                        element.get(MedicineListActivity.KEY_ID).toString(),
+                        element.get(MedicineListActivity.KEY_NAME).toString(),
+                        element.get(MedicineListActivity.KEY_TYPE).toString(),
+                        element.get(MedicineListActivity.KEY_ONSETACTION).toString(),
+                        element.get(MedicineListActivity.KEY_IMAGEURL).toString(),
+                        element.get(MedicineListActivity.KEY_CONFLICT).toString(),
+                        element.get(MedicineListActivity.KEY_DATE).toString()
+                );
+                listMedicines.add(medicine);
+            }
+
+        } catch (JSONException e) {
+            Log.d("MediApp", "A JSONException has occurred: " + e.toString());
+        }
+        return listMedicines;
+    }
 
 }

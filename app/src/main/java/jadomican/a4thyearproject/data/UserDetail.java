@@ -10,18 +10,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import jadomican.a4thyearproject.AWSProvider;
-import jadomican.a4thyearproject.MedicineListActivity;
+import jadomican.a4thyearproject.MediApp;
 
 /**
  * The User Profile model
@@ -39,6 +32,17 @@ public class UserDetail {
     private String bio;
     private String firstName;
     private String lastName;
+
+    public UserDetail(long id, String profileId, List<Medicine> addedMedicines, String dateOfBirth,
+                      String bio, String firstName, String lastName) {
+        this.id = id;
+        this.profileId = profileId;
+        this.addedMedicines = addedMedicines;
+        this.dateOfBirth = dateOfBirth;
+        this.bio = bio;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     /**
      * Create a new UserDetail from a Cursor object. Providing default values hopefully
@@ -58,37 +62,8 @@ public class UserDetail {
 
         userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
         userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
-
-        String medicinesValue = getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "");
-
-        //A list representing the user's added medicines
-        List<Medicine> listMedicines = new ArrayList<>();
-
-        // If addedMedicines is not equal to the default value
-        if (!medicinesValue.equals("")) {
-
-            try {
-                JSONArray array = new JSONArray(medicinesValue);
-
-                // For each medicine, add to the list
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject element = array.getJSONObject(i);
-                    Medicine medicine = new Medicine();
-                    medicine.setMedicineName(element.get(MedicineListActivity.KEY_NAME).toString());
-                    medicine.setMedicineOnsetAction(element.get(MedicineListActivity.KEY_ONSETACTION).toString());
-                    medicine.setMedicineId(element.get(MedicineListActivity.KEY_ID).toString());
-                    medicine.setMedicineType(element.get(MedicineListActivity.KEY_TYPE).toString());
-                    medicine.setMedicineImageUrl(element.get(MedicineListActivity.KEY_IMAGEURL).toString());
-                    medicine.setMedicineConflict(element.get(MedicineListActivity.KEY_CONFLICT).toString());
-                    medicine.setMedicineDate(element.get(MedicineListActivity.KEY_DATE).toString());
-                    listMedicines.add(medicine);
-                }
-            } catch (JSONException e) {
-                Log.d("UserDetail", "A JSONException has occurred: " + e.toString());
-            }
-        }
-
-        userDetail.setAddedMedicines(listMedicines);
+        // Convert the String representing the list of medicines from the database to an actual List object
+        userDetail.setAddedMedicines(MediApp.medicineStringToList(getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "")));
         userDetail.setDateOfBirth(getString(c, UserDetailsContentContract.UserDetails.DATEOFBIRTH, ""));
         userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
         userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
