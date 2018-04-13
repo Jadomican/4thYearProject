@@ -15,6 +15,7 @@
     <string name="view_profile_medicines">View Your Medicines</string>
     <string name="button_search_medicines">Search For Medicines</string>
     <string name="button_add_medicine">Add Medicine to Profile</string>
+    <string name="medicine_added">%1$s Already Added</string>
     <string name="button_medicine_conflict">Add Medicine to Profile (Potential Conflict Detected!)</string>
     <string name="welcome">Welcome to MediApp</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
@@ -31,6 +32,7 @@
     <string name="medicine_search_info_title">"Medicine Search"</string>
     <string name="medicine_search_info_message">"Perform a search for medicine in our database"</string>
     <string name="camera_info_title">"Camera Search"</string>
+    <string name="camera_use">"Use Your Camera To Search"</string>
     <string name="camera_info_message">"Use the camera to scan text to search for medicines"</string>
     <string name="date_added">"Added on "</string>
     <string name="date_added_alt">"Added on %1$s"</string>
@@ -41,6 +43,24 @@
     <string name="log_out">"Log Out"</string>
     <string name="no_results">"No results for %1$s"</string>
     <string name="no_medicines">"You have no medicines"</string>
-
+    <string name="medicine_name">"%1$s"</string>
+    <string name="back_to_results">Back to results</string>
+    <string name="more_options">More options</string>
+    <string name="sort_name">Sort by name</string>
+    <string name="sort_date">Sort by date</string>
+    <string name="sort_type">Sort by type</string>
+    <string name="bar_help">Help</string>
+    <string name="bar_main_help_title">MediApp Home</string>
+    <string name="bar_main_help_message">From here you can visit many other features of the app. Try using the sidebar to access your profile and search for new medicines.</string>
+    <string name="bar_edit_profile_help_title">Edit Profile</string>
+    <string name="bar_edit_profile_help_message">Here you can optionally add some basic information to your profile.</string>
+    <string name="bar_camera_help_title">Camera Search</string>
+    <string name="bar_camera_help_message">Use your device\'s camera to scan text. You can tap on the detected text to search for medicines using that text as a search term.</string>
+    <string name="bar_profile_medicines_help_title">Your Medicines</string>
+    <string name="bar_profile_medicines_help_message">Here you can find any medicines you have added to your profile. Swipe to delete medicines in a flash! Potential medicine conflicts are displayed on tap. You can also sort the list by name, type or date using the \'More Options\' menu.</string>
+    <string name="bar_medicine_search_help_title">Medicine Search Results</string>
+    <string name="bar_medicine_search_help_message">Your search results will appear here. If you want to search again, just tap on the Search icon and enter your term. Results can also be sorted by name or type.</string>
+    <string name="bar_medicine_info_help_title">%1$s Information</string>
+    <string name="bar_medicine_info_help_message">Here you will find information about %1$s. You can add %1$s to your profile at any time by selecting \'Add Medicine to Profile\'</string>
 
 </resources>

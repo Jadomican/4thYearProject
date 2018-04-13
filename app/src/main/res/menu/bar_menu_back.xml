@@ -1,22 +1,29 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_back"
         android:icon="@drawable/ic_action_back"
-        android:title="Back to results"
-        app:showAsAction="always"/>
+        android:title="@string/back_to_results"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/bar_help"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
-        android:title="@string/view_profile_medicines"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/button_search_medicines"
+        app:showAsAction="always" />
 
     <!-- Settings, always in the overflow -->
-    <item android:id="@+id/action_settings"
+    <item
+        android:id="@+id/action_settings"
         android:icon="@drawable/ic_action_settings"
-        android:title="More options"
-        app:showAsAction="never"/>
+        android:title="@string/more_options"
+        app:showAsAction="never" />
 
 </menu>

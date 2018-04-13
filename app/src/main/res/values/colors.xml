@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="danger">#d72a30</color>
     <color name="mediBlue">#008ae6</color>
+    <color name="mediBlueAlt">#1a7cbe</color>
     <color name="white">#FFFFFF</color>
 
 </resources>

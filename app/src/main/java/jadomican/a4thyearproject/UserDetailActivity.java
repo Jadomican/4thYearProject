@@ -81,6 +81,12 @@ public class UserDetailActivity extends AppCompatActivity {
             case R.id.action_search:
                 onSearchRequested();
                 return true;
+            case R.id.action_help:
+                MediApp.displayDialog(this,
+                        getString(R.string.bar_edit_profile_help_title),
+                        getString(R.string.bar_edit_profile_help_message));
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

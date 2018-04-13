@@ -1,16 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/bar_help"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
-        android:title="@string/view_profile_medicines"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/button_search_medicines"
+        app:showAsAction="always" />
 
     <!-- Settings, always be in the overflow -->
-    <item android:id="@+id/log_out"
+    <item
+        android:id="@+id/log_out"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/log_out"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 </menu>

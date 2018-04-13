@@ -95,6 +95,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
             medicine.setMedicineId(extras.getString(MedicineListActivity.KEY_ID));
             medicine.setMedicineImageUrl(extras.getString(MedicineListActivity.KEY_IMAGEURL));
             medicine.setMedicineConflict(extras.getString(MedicineListActivity.KEY_CONFLICT));
+            actionBar.setTitle(getString(R.string.medicine_name, medicine.getMedicineName()));
             syncUser();
             setImage();
         }
@@ -153,6 +154,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
+            addMedicineButton.setVisibility(View.VISIBLE);
             bmImage.setImageBitmap(result);
             if (dialog.isShowing()) {
                 dialog.dismiss();
@@ -170,13 +172,22 @@ public class MedicineDetailsActivity extends AppCompatActivity {
     private void setAssets() {
         medicineNameDisplay.setText(medicine.getMedicineName());
         String buttonText = getString(R.string.button_add_medicine);
+        boolean alreadyAdded = false;
         for (Medicine addedMedicine : mItem.getAddedMedicines()) {
-            if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()))
+
+            // If the medicine already exists, inform the user
+            if (addedMedicine.getMedicineName().equals(medicine.getMedicineName()))
+            {
+                buttonText = getString(R.string.medicine_added, medicine.getMedicineName());
+                //getColor is deprecated as of API 23, use ContextCompat instead
+                addMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.mediBlue));
+                alreadyAdded = true;
+            }
+            else if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()) && !alreadyAdded)
             {
                 buttonText = getString(R.string.button_medicine_conflict);
                 //getColor is deprecated as of API 23, use ContextCompat instead
                 addMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.danger));
-                break;
             }
         }
         addMedicineButton.setText(buttonText);
@@ -227,6 +238,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
             };
             queryHandler.startUpdate(UPDATE_TOKEN, null, itemUri, values, null, null);
         }
+        setAssets();
     }
 
     @Override
@@ -247,6 +259,12 @@ public class MedicineDetailsActivity extends AppCompatActivity {
             case R.id.action_back:
                 onBackPressed();
                 return true;
+            case R.id.action_help:
+                MediApp.displayDialog(this,
+                        getString(R.string.bar_medicine_info_help_title, medicine.getMedicineName()),
+                        getString(R.string.bar_medicine_info_help_message, medicine.getMedicineName()));
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

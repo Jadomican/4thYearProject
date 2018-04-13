@@ -2,20 +2,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/bar_help"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
         android:title="@string/button_search_medicines"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <!-- Settings, always in the overflow -->
     <item android:id="@+id/action_sort_name"
         android:icon="@drawable/ic_action_settings"
-        android:title="Sort by name"
+        android:title="@string/sort_name"
         app:showAsAction="never"/>
 
     <item android:id="@+id/action_sort_type"
         android:icon="@drawable/ic_action_settings"
-        android:title="Sort by type"
+        android:title="@string/sort_type"
         app:showAsAction="never"/>
 
 </menu>

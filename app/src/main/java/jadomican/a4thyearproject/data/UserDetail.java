@@ -53,31 +53,26 @@ public class UserDetail {
      */
     public static UserDetail fromCursor(Cursor c) {
 
-        UserDetail userDetail = new UserDetail();
-        if (c.isAfterLast())
-        {
+        // If the cursor is empty, return a default empty user
+        if (c.isAfterLast()) {
             Log.d("CURSOR", "IS AFTER LAST");
-            return userDetail;
+            return new UserDetail();
         }
 
-        userDetail.setId(getLong(c, UserDetailsContentContract.UserDetails._ID, -1));
-        userDetail.setProfileId(getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""));
-        // Convert the String representing the list of medicines from the database to an actual List object
-        userDetail.setAddedMedicines(MediApp.medicineStringToList(getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "")));
-        userDetail.setDateOfBirth(getString(c, UserDetailsContentContract.UserDetails.DATEOFBIRTH, ""));
-        userDetail.setBio(getString(c, UserDetailsContentContract.UserDetails.BIO, ""));
-        userDetail.setFirstName(getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""));
-        userDetail.setLastName(getString(c, UserDetailsContentContract.UserDetails.LASTNAME, ""));
-        return userDetail;
+        // Otherwise populate the user and return
+        return new UserDetail(
+                getLong(c, UserDetailsContentContract.UserDetails._ID, -1),
+                getString(c, UserDetailsContentContract.UserDetails.PROFILEID, ""),
+                MediApp.medicineStringToList(getString(c, UserDetailsContentContract.UserDetails.ADDEDMEDICINES, "")),
+                getString(c, UserDetailsContentContract.UserDetails.DATEOFBIRTH, ""),
+                getString(c, UserDetailsContentContract.UserDetails.BIO, ""),
+                getString(c, UserDetailsContentContract.UserDetails.FIRSTNAME, ""),
+                getString(c, UserDetailsContentContract.UserDetails.LASTNAME, "")
+        );
     }
 
     /**
-     * Read a string from a key in the cursor
-     *
-     * @param c the cursor to read from
-     * @param col the column key
-     * @param defaultValue the default value if the column key does not exist in the cursor
-     * @return the value of the key
+     * Read a string from a key in the cursor. If the key doesn't exist, return a default value
      */
     private static String getString(Cursor c, String col, String defaultValue) {
         if (c.getColumnIndex(col) >= 0 && c.getString(c.getColumnIndex(col)) != null) {
@@ -88,12 +83,7 @@ public class UserDetail {
     }
 
     /**
-     * Read a long value from a key in the cursor
-     *
-     * @param c the cursor to read from
-     * @param col the column key
-     * @param defaultValue the default value if the column key does not exist in the cursor
-     * @return the value of the key
+     * Read a long value from a key in the cursor. If the key doesn't exist, return a default value
      */
     private static long getLong(Cursor c, String col, long defaultValue) {
         if (c.getColumnIndex(col) >= 0) {

@@ -4,7 +4,7 @@ package jadomican.a4thyearproject;
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
+ * <p>
  * The home screen activity of the application, loaded after the initial login. Contains 'links' to
  * other main functionality of the app, such as editing user profile and searching for medicines
  */
@@ -13,13 +13,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,11 +27,10 @@ import android.widget.Button;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 
-public class MainActivity extends AppCompatActivity {
+import com.amazonaws.mobile.auth.core.IdentityManager;
 
-    Button medicineSearchButton;
-    Button cameraSearchButton;
-    NavigationView navigationView;
+public class MainActivity extends AppCompatActivity {
+    private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
 
     @Override
@@ -41,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.nav_home);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setCheckedItem(R.id.nav_home);
 
-        medicineSearchButton = (Button) findViewById(R.id.medicineSearchButton);
-        cameraSearchButton = (Button) findViewById(R.id.cameraSearchButton);
+        Button medicineSearchButton = (Button) findViewById(R.id.medicineSearchButton);
+        Button cameraSearchButton = (Button) findViewById(R.id.cameraSearchButton);
 
         // Set listener for information popup
         setTouchListener(medicineSearchButton,
@@ -62,30 +59,13 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        MediApp.setNavigationListener(navigationView, mDrawerLayout, R.id.nav_home, this);
-
-        if (getIntent().getExtras() != null) {
-            if (getIntent().getStringExtra("search").equals("yes")) {
-                onSearchRequested();
-            }
-        }
-
+        MediApp.setNavigationListener(mNavigationView, mDrawerLayout, R.id.nav_home, this);
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
-        navigationView.setCheckedItem(R.id.nav_home);
-    }
-
-    public void goToEditProfile(View view) {
-        Bundle arguments = new Bundle();
-        arguments.putString(UserDetailFragment.ARG_ITEM_ID, AWSProvider.getInstance().getIdentityManager().getCachedUserID());
-        Context context = view.getContext();
-        Intent intent = new Intent(context, UserDetailActivity.class);
-        intent.putExtras(arguments);
-        context.startActivity(intent);
+        mNavigationView.setCheckedItem(R.id.nav_home);
     }
 
     public void goToProfileHub(View view) {
@@ -146,12 +126,19 @@ public class MainActivity extends AppCompatActivity {
                 onSearchRequested();
                 return true;
             case R.id.log_out:
+                IdentityManager id = AWSProvider.getInstance().getIdentityManager();
+                id.signOut();
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, AuthenticatorActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(intent);
                 finish();
+                return true;
+            case R.id.action_help:
+                MediApp.displayDialog(this,
+                        getString(R.string.bar_main_help_title),
+                        getString(R.string.bar_main_help_message));
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -1,9 +1,14 @@
 package jadomican.a4thyearproject;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -60,7 +65,7 @@ public class MediApp extends Application {
                 view.getBackground().setColorFilter(Color.rgb(219, 68, 55), PorterDuff.Mode.SRC_IN);
                 break;
             case KEY_POSITIVE:
-                view.getBackground().setColorFilter(Color.rgb(0, 153, 255), PorterDuff.Mode.SRC_IN);
+                view.getBackground().setColorFilter(Color.rgb(86, 164, 2), PorterDuff.Mode.SRC_IN);
                 break;
         }
         TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
@@ -107,9 +112,16 @@ public class MediApp extends Application {
                                     intent = new Intent(context, OcrCaptureActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                                     break;
+                                case R.id.log_out:
+                                    intent = new Intent(context, AuthenticatorActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    context.startActivity(intent);
+                                    act.finish();
+                                    break;
                             }
-                            act.startActivityIfNeeded(intent, 0);
-                            return true;
+                                act.startActivityIfNeeded(intent, 0);
+                                return true;
                         }
                     }
                 });
@@ -117,7 +129,6 @@ public class MediApp extends Application {
 
     // Return a properly formatted date based on the user's device settings
     static DateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT_NO_ZONE);
-
     public static String getFormattedDate(String date) {
         try {
             df.setTimeZone(TimeZone.getDefault());
@@ -162,5 +173,33 @@ public class MediApp extends Application {
         }
         return listMedicines;
     }
+
+    public static boolean isConnectedToInternet() {
+        ConnectivityManager connectivity = (ConnectivityManager) getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null)
+                for (int i = 0; i < info.length; i++)
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+
+        }
+        return false;
+    }
+
+    public static void displayDialog(Activity activity, String title, String message) {
+        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
+
 
 }

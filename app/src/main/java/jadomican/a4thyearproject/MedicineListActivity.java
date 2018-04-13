@@ -121,6 +121,12 @@ public class MedicineListActivity extends AppCompatActivity
             case R.id.action_sort_type:
                 populateAndLoadList(ProfileMedicineListActivity.SORT_TYPE);
                 return true;
+            case R.id.action_help:
+                MediApp.displayDialog(this,
+                        getString(R.string.bar_medicine_search_help_title),
+                        getString(R.string.bar_medicine_search_help_message));
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

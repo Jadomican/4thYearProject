@@ -1,11 +1,14 @@
 package jadomican.a4thyearproject;
 
+import android.database.MatrixCursor;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -18,9 +21,12 @@ import java.util.List;
 import jadomican.a4thyearproject.data.Medicine;
 import jadomican.a4thyearproject.data.UserDetail;
 import jadomican.a4thyearproject.data.UserDetailDO;
+import jadomican.a4thyearproject.data.UserDetailsContentContract;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 import static org.mockito.Matchers.any;
 
 /**
@@ -30,13 +36,17 @@ import static org.mockito.Matchers.any;
  */
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Log.class, TextUtils.class})
+@PrepareForTest({Log.class, TextUtils.class, MatrixCursor.class, Uri.class})
 public class MediAppTest {
+
+    @Mock
+    private MatrixCursor myMatrixCursor;
 
     // Mock the TextUtils class to allow testing of the isEmpty method
     @Before
     public void setup() {
         PowerMockito.mockStatic(TextUtils.class);
+
         PowerMockito.when(TextUtils.isEmpty(any(CharSequence.class))).thenAnswer(new Answer<Boolean>() {
             @Override
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
@@ -232,5 +242,32 @@ public class MediAppTest {
         assertThat(medicineList.isEmpty(), is(true));
     }
 
+    // Test the fromCursor() method functions correctlt when given an empty cursor. This may arise
+    // if the a user attempts to use the app who has no entry in the database
+    @Test
+    public void empty_fromCursor_isCorrect() throws Exception {
+        PowerMockito.mockStatic(MatrixCursor.class);
+        PowerMockito.mockStatic(Uri.class);
+
+        MatrixCursor emptyCursor = mock(MatrixCursor.class);
+
+        // Populate a sample cursor with the user profile columns
+        String[] fields = UserDetailsContentContract.UserDetails.PROJECTION_ALL;
+        Object[] sampleValues = new Object[fields.length];
+        emptyCursor.addRow(sampleValues);
+
+        // Invoke the fromCursor method, converting the cursor to a user profile object
+        UserDetail userCreatedFromCursor = UserDetail.fromCursor(myMatrixCursor);
+        assertThat(userCreatedFromCursor.getFirstName(), is(""));
+        assertThat(userCreatedFromCursor.getLastName(), is(""));
+        assertThat(userCreatedFromCursor.getDateOfBirth(), is(""));
+        assertThat(userCreatedFromCursor.getBio(), is(""));
+
+        // In this case an empty list of medicines should be returned, rather than a null object,
+        // which could cause errors at various points in the application
+        assertThat(userCreatedFromCursor.getAddedMedicines().isEmpty(), is(true));
+    }
 
 }
+
+

@@ -6,57 +6,64 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="jadomican.a4thyearproject.MedicineDetailsActivity">
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <include layout="@layout/toolbar"/>
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="jadomican.a4thyearproject.MedicineDetailsActivity">
+
+            <include layout="@layout/toolbar" />
 
 
-        <ImageView
-            android:id="@+id/imageDisplay"
-            android:layout_marginTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:adjustViewBounds="true"
-            android:layout_below="@id/toolbar"/>
+            <ImageView
+                android:id="@+id/imageDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/toolbar"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="4dp"
+                android:adjustViewBounds="true" />
 
-        <TextView
-            android:id="@+id/medicineNameDisplay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/imageDisplay"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:adjustViewBounds="false"
-            android:drawablePadding="5dip"
-            android:drawableRight="@drawable/ic_speak"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/medicineNameDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageDisplay"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="false"
+                android:drawablePadding="5dip"
+                android:drawableRight="@drawable/ic_speak"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/addMedicineButton"
-            style="@android:style/Widget.Holo.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/medicineNameDisplay"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:adjustViewBounds="false"
-            android:onClick="saveData"
-            android:text="@string/button_add_medicine" />
+            <Button
+                android:id="@+id/addMedicineButton"
+                style="@android:style/Widget.Holo.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/medicineNameDisplay"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="false"
+                android:onClick="saveData"
+                android:text="@string/button_add_medicine"
+                android:visibility="invisible"/>
 
-    </RelativeLayout>
+        </RelativeLayout>
+
+    </ScrollView>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

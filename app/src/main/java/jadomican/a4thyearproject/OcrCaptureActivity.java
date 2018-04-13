@@ -227,10 +227,14 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 //mDrawerLayout.openDrawer(GravityCompat.START);
                 onBackPressed();
                 //moveTaskToBack(true);
-
                 return true;
             case R.id.action_search:
                 onSearchRequested();
+                return true;
+            case R.id.action_help:
+                MediApp.displayDialog(this,
+                        getString(R.string.bar_camera_help_title),
+                        getString(R.string.bar_camera_help_message));
                 return true;
         }
         return super.onOptionsItemSelected(item);
