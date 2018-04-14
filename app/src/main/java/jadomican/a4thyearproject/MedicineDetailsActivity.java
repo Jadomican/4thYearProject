@@ -1,5 +1,11 @@
 package jadomican.a4thyearproject;
 
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
+
 import android.app.ProgressDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
@@ -10,18 +16,9 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
-import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -41,76 +38,74 @@ import jadomican.a4thyearproject.data.Medicine;
 import jadomican.a4thyearproject.data.UserDetail;
 import jadomican.a4thyearproject.data.UserDetailsContentContract;
 
-public class MedicineDetailsActivity extends AppCompatActivity {
+/**
+ * Activity representing a medicine information page. From here a user can add a Medicine to their
+ * profile
+ */
+public class MedicineDetailsActivity extends BaseAppCompatActivity {
 
     private UserDetail mItem;
     private Uri itemUri;
-
     private ContentResolver contentResolver;
 
     private static final int QUERY_TOKEN = 1001;
     private static final int UPDATE_TOKEN = 1002;
     // The timezone stored in the database is always the same, regardless of where the user of the
-    // app is located. This prevents ParseException occurring due to timezone differences
+    // app is located. This helps prevent ParseException occurring due to timezone differences
     public static final String COMMON_TIMEZONE = "UTC";
 
     // A TextToSpeech engine for speaking a String value.
     private TextToSpeech tts;
 
-    Medicine medicine = new Medicine();
+    // The medicine this page is representing
+    private Medicine medicine;
+    private TextView mMedicineNameDisplay;
+    private Button mAddMedicineButton;
+    private ProgressDialog mProgressDialog;
 
-    TextView medicineNameDisplay;
-    Button addMedicineButton;
-    NavigationView navigationView;
-    private DrawerLayout mDrawerLayout;
-
-    private ProgressDialog dialog;
-
+    /**
+     * Override the base class onCreate method with Activity specific code
+     *
+     * @see BaseAppCompatActivity#onCreate(Bundle)
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_medicine_details);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-
-        // Set up the toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        MediApp.setNavigationListener(navigationView, mDrawerLayout, -1, this);
-
-        dialog = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(this);
         contentResolver = getApplicationContext().getContentResolver();
 
+        // Extract the user ID, used in creating the URI for database queries
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey(UserDetailFragment.ARG_ITEM_ID)) {
             String itemId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
+
             //Populate the Medicine object based on the choice made by the user from the list
-            medicine.setMedicineName(extras.getString(MedicineListActivity.KEY_NAME));
-            medicine.setMedicineType(extras.getString(MedicineListActivity.KEY_TYPE));
-            medicine.setMedicineOnsetAction(extras.getString(MedicineListActivity.KEY_ONSETACTION));
-            medicine.setMedicineId(extras.getString(MedicineListActivity.KEY_ID));
-            medicine.setMedicineImageUrl(extras.getString(MedicineListActivity.KEY_IMAGEURL));
-            medicine.setMedicineConflict(extras.getString(MedicineListActivity.KEY_CONFLICT));
+            medicine = new Medicine(extras.getString(
+                    MedicineListActivity.KEY_ID),
+                    extras.getString(MedicineListActivity.KEY_NAME),
+                    extras.getString(MedicineListActivity.KEY_TYPE),
+                    extras.getString(MedicineListActivity.KEY_ONSETACTION),
+                    extras.getString(MedicineListActivity.KEY_IMAGEURL),
+                    extras.getString(MedicineListActivity.KEY_CONFLICT)
+            );
             actionBar.setTitle(getString(R.string.medicine_name, medicine.getMedicineName()));
             syncUser();
             setImage();
         }
 
-        addMedicineButton = (Button) findViewById(R.id.addMedicineButton);
-        addMedicineButton.setOnClickListener(new View.OnClickListener() {
+        mAddMedicineButton = (Button) findViewById(R.id.addMedicineButton);
+        mAddMedicineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveData(v);
             }
         });
-        medicineNameDisplay = (TextView) findViewById(R.id.medicineNameDisplay);
+        mMedicineNameDisplay = (TextView) findViewById(R.id.medicineNameDisplay);
 
-        setTouchListener(medicineNameDisplay, medicine.getMedicineName());
+        setTouchListener(mMedicineNameDisplay, medicine.getMedicineName());
 
+        // Set up the Text to Speech listener
         TextToSpeech.OnInitListener listener =
                 new TextToSpeech.OnInitListener() {
                     @Override
@@ -126,7 +121,36 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         tts = new TextToSpeech(this.getApplicationContext(), listener);
     }
 
-    // Download the image belonging to the medicine
+    // Pass Activity-specific resources to the base class
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_medicine_details;
+    }
+
+    // No menu item for medicine search detail page
+    @Override
+    protected int getMenuItemResourceId() {
+        return -1;
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return R.menu.bar_menu_back;
+    }
+
+    @Override
+    protected String getHelpTitle() {
+        return getString(R.string.bar_medicine_info_help_title, medicine.getMedicineName());
+    }
+
+    @Override
+    protected String getHelpMessage() {
+        return getString(R.string.bar_medicine_info_help_message, medicine.getMedicineName());
+    }
+
+    /**
+     * Download and show the image content associated with the medicine
+     */
     private class ImageDownload extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -136,8 +160,8 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            dialog.setMessage(getResources().getString(R.string.loading));
-            dialog.show();
+            mProgressDialog.setMessage(getResources().getString(R.string.loading));
+            mProgressDialog.show();
         }
 
         @Override
@@ -154,45 +178,52 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
-            addMedicineButton.setVisibility(View.VISIBLE);
+            mAddMedicineButton.setVisibility(View.VISIBLE);
+            mMedicineNameDisplay.setVisibility(View.VISIBLE);
             bmImage.setImageBitmap(result);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
+            if (mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
             }
         }
     }
 
+    /**
+     * Set up the ImageView to display the downloaded image
+     */
     private void setImage() {
         final ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
         ImageDownload imgDownload = new ImageDownload(imageView);
         imgDownload.execute(medicine.getMedicineImageUrl());
     }
 
-    // Alert user of medicine conflict
+    /**
+     * Set up text and button content. Inform user if there are any potential conflicts between the
+     * medicine in view and those in the user's profile
+     */
     private void setAssets() {
-        medicineNameDisplay.setText(medicine.getMedicineName());
+        mMedicineNameDisplay.setText(medicine.getMedicineName());
         String buttonText = getString(R.string.button_add_medicine);
         boolean alreadyAdded = false;
         for (Medicine addedMedicine : mItem.getAddedMedicines()) {
 
             // If the medicine already exists, inform the user
-            if (addedMedicine.getMedicineName().equals(medicine.getMedicineName()))
-            {
+            if (addedMedicine.getMedicineName().equals(medicine.getMedicineName())) {
                 buttonText = getString(R.string.medicine_added, medicine.getMedicineName());
                 //getColor is deprecated as of API 23, use ContextCompat instead
-                addMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.mediBlue));
+                mAddMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.mediBlue));
                 alreadyAdded = true;
-            }
-            else if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()) && !alreadyAdded)
-            {
+            } else if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()) && !alreadyAdded) {
                 buttonText = getString(R.string.button_medicine_conflict);
                 //getColor is deprecated as of API 23, use ContextCompat instead
-                addMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.danger));
+                mAddMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.danger));
             }
         }
-        addMedicineButton.setText(buttonText);
+        mAddMedicineButton.setText(buttonText);
     }
 
+    /**
+     * Save the new UserDetail object to the database with the new medicine stored
+     */
     public void saveData(View view) {
         // Save the edited medicines back to the profile.
         boolean isUpdated = true;
@@ -201,8 +232,7 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         //Check if the medicine already exists in the user's profile
         for (Medicine addedMedicine : updatedList) {
 
-            if (addedMedicine.getMedicineName().equals(medicine.getMedicineName()))
-            {
+            if (addedMedicine.getMedicineName().equals(medicine.getMedicineName())) {
                 MediApp.customToast(addedMedicine.getMedicineName() + " has already been added!", MediApp.KEY_NEGATIVE);
                 isUpdated = false;
             }
@@ -241,37 +271,19 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         setAssets();
     }
 
+    /**
+     * Sync user on resume of Activity to maintain consistency with the backend database
+     */
     @Override
     public void onResume() {
         super.onResume();
         syncUser();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-            case R.id.action_search:
-                onSearchRequested();
-                return true;
-            case R.id.action_back:
-                onBackPressed();
-                return true;
-            case R.id.action_help:
-                MediApp.displayDialog(this,
-                        getString(R.string.bar_medicine_info_help_title, medicine.getMedicineName()),
-                        getString(R.string.bar_medicine_info_help_message, medicine.getMedicineName()));
-                return true;
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    //Populate the user object with their latest changes from the DynamoDB table
-    private void syncUser()
-    {
+    /**
+     * Populate the user object with their latest changes from the DynamoDB table
+     */
+    private void syncUser() {
         contentResolver = getApplicationContext().getContentResolver();
         // Asynchronously query the backend database
         AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
@@ -287,7 +299,10 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
     }
 
-    // Set a listener for the text-to-speech icon
+
+    /**
+     * Set a listener for the text-to-speech icon
+     */
     public void setTouchListener(final TextView textView, final String wordsToSay) {
         // noinspection AndroidLintClickableViewAccessibility
         textView.setOnTouchListener(new View.OnTouchListener() {
@@ -298,9 +313,8 @@ public class MedicineDetailsActivity extends AppCompatActivity {
 
                 // If user presses down (taps) on icon
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (event.getRawX() >= (medicineNameDisplay.getRight() - medicineNameDisplay.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        if (wordsToSay != null)
-                        {
+                    if (event.getRawX() >= (mMedicineNameDisplay.getRight() - mMedicineNameDisplay.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (wordsToSay != null) {
                             tts.speak(wordsToSay, TextToSpeech.QUEUE_ADD, null, "DEFAULT");
                         }
                         return true;
@@ -311,14 +325,12 @@ public class MedicineDetailsActivity extends AppCompatActivity {
         });
     }
 
-    // Add the additional action bar items based on the xml defined menu. In this particular activity
-    // a back button is provided in the toolbar to return to the previously performed search
+    /**
+     * On the medicine details screen the back button returns to the search results, rather than opening the navigation drawer
+     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bar_menu_back, menu);
-        return super.onCreateOptionsMenu(menu);
+    public void onBackPressed() {
+        super.onBackDeviceButtonPressed();
     }
 
 }

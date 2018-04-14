@@ -11,7 +11,7 @@
         android:id="@+id/action_help"
         android:icon="@drawable/ic_action_help"
         android:title="@string/bar_help"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_search"

@@ -1,24 +1,15 @@
 package jadomican.a4thyearproject;
 
-/**
+/*
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
- * The activity representing the actual camera capture screen. This is called when
- * the camera is to be used. Adapted from Google Mobile Vision tutorials available at:
- * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
  */
 
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -28,12 +19,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import android.view.GestureDetector;
@@ -48,7 +36,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.CommonStatusCodes;
 
 import jadomican.a4thyearproject.camera.CameraSource;
 import jadomican.a4thyearproject.camera.CameraSourcePreview;
@@ -58,8 +45,12 @@ import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
-import java.util.Locale;
 
+/**
+ * The activity representing the actual camera capture screen. This is called when
+ * the camera is to be used. Adapted from Google Mobile Vision tutorials available at:
+ * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
+ */
 public final class OcrCaptureActivity extends AppCompatActivity {
 
     private static final String TAG = "OcrCaptureActivity";
@@ -79,31 +70,17 @@ public final class OcrCaptureActivity extends AppCompatActivity {
     private CameraSourcePreview mPreview;
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
 
-//    NavigationView navigationView;
-//    private DrawerLayout mDrawerLayout;
-
-
     // Gesture Detectors interpret screen taps, swipes, etc.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
 
+    /**
+     * Set the content view for the camera viewfinder Activity
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ocr_capture);
-
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setCheckedItem(R.id.nav_camera);
-
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
-        //MediApp.setNavigationListener(navigationView, mDrawerLayout, R.id.nav_camera, this);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
@@ -128,7 +105,9 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 .show();
     }
 
-    //Method to handle requesting the camera permissions
+    /**
+     * Method to handle requesting the camera permissions
+     */
     private void requestCameraPermission() {
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
         if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -152,7 +131,9 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 .show();
     }
 
-    //Handle the user touching the graphics on screen
+    /**
+     * Handle the user touching the graphics on screen
+     */
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         boolean b = scaleGestureDetector.onTouchEvent(e);
@@ -160,7 +141,11 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         return b || c || super.onTouchEvent(e);
     }
 
-    //Create and start the camera
+    //
+
+    /**
+     * Create and start the camera
+     */
     private void createCameraSource(boolean autoFocus, boolean useFlash) {
         Context context = getApplicationContext();
 
@@ -193,7 +178,9 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                         .build();
     }
 
-    // Restarts the camera
+    /**
+     * Restarts the camera on resume of Activity
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -201,7 +188,9 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         startCameraSource();
     }
 
-    // Stops the camera
+    /**
+     * Stop the camera on pause of activity
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -210,8 +199,11 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         }
     }
 
-    // Release resources associated with the camera source, associated detectors
-    // and the processing pipeline
+
+    /**
+     * Release resources associated with the camera source, associated detectors
+     * and the processing pipeline
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -220,11 +212,13 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handle menu options when tapped
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                //mDrawerLayout.openDrawer(GravityCompat.START);
                 onBackPressed();
                 //moveTaskToBack(true);
                 return true;
@@ -240,17 +234,10 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Open the navigation bar when pressing the back button
-//    @Override
-//    public void onBackPressed() {
-//        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-//            mDrawerLayout.closeDrawers();
-//        } else {
-//            mDrawerLayout.openDrawer(GravityCompat.START);
-//        }
-//    }
 
-    // Add the additional action bar items based on the xml defined menu
+    /**
+     * Add the additional action bar items based on the xml defined menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -259,12 +246,17 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-
-    // Callback method called after camera permission request
+    /**
+     * Callback method called after camera permission request
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                          @NonNull String[] permissions,
-                                          @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         if (requestCode != RC_HANDLE_CAMERA_PERM) {
             Log.d(TAG, "Got unexpected permission result: " + requestCode);
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -296,9 +288,12 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 .show();
     }
 
-
-    // Start or restart the camera source if it already exists. In the cas where the source
-    // does not already exist, this method will get called when that source IS created later.
+    /**
+     * Start or restart the camera source if it already exists. In the cas where the source
+     * does not already exist, this method will get called when that source IS created later.
+     *
+     * @throws SecurityException
+     */
     private void startCameraSource() throws SecurityException {
         // Check that Google play services are available
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
@@ -323,7 +318,8 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         }
     }
 
-    /** Handle tapping on text at X and Y co-ordinates; search for medicines
+    /**
+     * Handle tapping on text at X and Y co-ordinates; search for medicines
      */
     private boolean onTap(float rawX, float rawY) {
         OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
@@ -336,17 +332,18 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 Intent intent = new Intent(context, MedicineListActivity.class);
                 intent.putExtra(MedicineListActivity.KEY_QUERY, text.getValue().toLowerCase());
                 context.startActivity(intent);
-            }
-            else {
+            } else {
                 Log.d(TAG, "text data was null");
             }
-        }
-        else {
+        } else {
             Log.d(TAG, "no text detected");
         }
         return text != null;
     }
 
+    /**
+     * Capture a tap of the screen, then call the onTap method to handle
+     */
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {

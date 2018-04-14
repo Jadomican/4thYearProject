@@ -1,7 +1,12 @@
 package jadomican.a4thyearproject;
 
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
+
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -11,32 +16,21 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.animation.BounceInterpolator;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SimpleAdapter;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.app.ActionBar;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -52,14 +46,11 @@ import jadomican.a4thyearproject.data.UserDetailsContentContract;
  * An activity to represent the user profile's list of medicines.
  */
 
-public class ProfileMedicineListActivity extends AppCompatActivity
+public class ProfileMedicineListActivity extends BaseAppCompatActivity
         implements AdapterView.OnItemClickListener {
 
     private UserDetail mItem;
-    private Uri itemUri;
-    private DrawerLayout mDrawerLayout;
-    NavigationView navigationView;
-    private TextView onsetActionView;
+    private Uri mItemUri;
 
     private ContentResolver contentResolver;
 
@@ -72,29 +63,19 @@ public class ProfileMedicineListActivity extends AppCompatActivity
     public static final String DATE_FORMAT_NO_ZONE = "dd/MMM/yyyy HH:mm";
     public static final String KEY_DATE_FORMAT = "formattedDate";
 
-    //private ListView mListView;
-    SwipeMenuListView mListView;
-    SimpleAdapter adapter;
+    private SwipeMenuListView mListView;
+    private SimpleAdapter mSimpleAdapter;
     //List of HashMaps representing the list of profile medicines to be displayed
     private List<HashMap<String, String>> mMedicineMapList = new ArrayList<>();
 
+    /**
+     * Overrides the Base class Activity and provides activity specific actions
+     *
+     * @see BaseAppCompatActivity#onCreate(Bundle)
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_medicine_list);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        navigationView.setCheckedItem(R.id.nav_profile_medicines);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
-        MediApp.setNavigationListener(navigationView, mDrawerLayout, R.id.nav_profile_medicines, this);
-
         mListView = (SwipeMenuListView) findViewById(R.id.profile_list_view);
         mListView.setOnItemClickListener(this);
         // Perform bounce animation when closing menu
@@ -104,7 +85,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
 
         // Get current user details based on user ID
         String itemId = AWSProvider.getInstance().getIdentityManager().getCachedUserID();
-        itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
+        mItemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
 
         // Initialise and populate the Swipe Menu Creator
         SwipeMenuCreator creator = new SwipeMenuCreator() {
@@ -114,8 +95,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 SwipeMenuItem moreInfoItem = new SwipeMenuItem(
                         getApplicationContext());
                 // Set BG colour
-                moreInfoItem.setBackground(new ColorDrawable(Color.rgb(0x00, 0x8a,
-                        0xe6)));
+                moreInfoItem.setBackground(new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.mediBlue)));
                 moreInfoItem.setWidth(170);
                 moreInfoItem.setTitle("More");
                 moreInfoItem.setTitleSize(18);
@@ -126,8 +106,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 SwipeMenuItem deleteItem = new SwipeMenuItem(
                         getApplicationContext());
                 // Set BG colour
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
-                        0x3F, 0x25)));
+                deleteItem.setBackground(new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.delete_red)));
                 deleteItem.setWidth(170);
                 // Add the Delete icon to the menu
                 deleteItem.setIcon(R.drawable.ic_delete);
@@ -146,11 +125,8 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 switch (index) {
                     case 0:
                         showConflicts(mMedicineMapList, position);
-                        Log.d("swipe", "onMenuItemClick: clicked item " + position);
                         break;
                     case 1:
-                        Log.d("swipe", "onMenuItemClick: clicked item " + mMedicineMapList.get(position).get(MedicineListActivity.KEY_NAME));
-
                         final String medicineToDelete = mMedicineMapList.get(position).get(MedicineListActivity.KEY_NAME);
                         // Confirm if the user really wants to delete the medicine
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -159,7 +135,7 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                                 switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
                                         mMedicineMapList.remove(position);
-                                        adapter.notifyDataSetChanged();
+                                        mSimpleAdapter.notifyDataSetChanged();
                                         loadListView();
                                         deleteFromProfile(medicineToDelete);
                                         break;
@@ -181,10 +157,39 @@ public class ProfileMedicineListActivity extends AppCompatActivity
             }
         });
 
-
     }
 
-    // Update the profile if a delete has been specified
+    // Return activity specific resources to the base class
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_profile_medicine_list;
+    }
+
+    @Override
+    protected int getMenuItemResourceId() {
+        return R.id.nav_profile_medicines;
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return R.menu.bar_menu_search;
+    }
+
+    @Override
+    protected String getHelpTitle() {
+        return getString(R.string.bar_profile_medicines_help_title);
+    }
+
+    @Override
+    protected String getHelpMessage() {
+        return getString(R.string.bar_profile_medicines_help_message);
+    }
+
+    /**
+     * Update the profile if a delete has been specified
+     *
+     * @param medicineToRemove The medicine to be removed from the profile
+     */
     private void deleteFromProfile(String medicineToRemove) {
         // Remove the specified medicine from the list
         List<Medicine> updatedList = new ArrayList<>(mItem.getAddedMedicines());
@@ -208,10 +213,12 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 MediApp.customToast("Deleted", MediApp.KEY_POSITIVE);
             }
         };
-        queryHandler.startUpdate(UPDATE_TOKEN, null, itemUri, values, null, null);
+        queryHandler.startUpdate(UPDATE_TOKEN, null, mItemUri, values, null, null);
     }
 
-    //Populate the user object with their latest changes from the DynamoDB table
+    /**
+     * Populate the user object with their latest changes from the DynamoDB table
+     */
     private void syncUser() {
         contentResolver = getApplicationContext().getContentResolver();
         // Replace local cursor methods with async query handling
@@ -225,10 +232,15 @@ public class ProfileMedicineListActivity extends AppCompatActivity
                 populateAndLoadList(SORT_DATE);
             }
         };
-        queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
+        queryHandler.startQuery(QUERY_TOKEN, null, mItemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
     }
 
-    // Populate and load the list displaying user medicines
+    /**
+     * Populate and load the list displaying user medicines
+     *
+     * @param sortType The type of sort specified by the user, passed in to the sort method in the Medicine class
+     * @see Medicine#sort(List, String)
+     */
     private void populateAndLoadList(String sortType) {
         mMedicineMapList.clear();
         List<Medicine> addedMedicines = new ArrayList<>(mItem.getAddedMedicines());
@@ -257,6 +269,9 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         loadListView();
     }
 
+    /**
+     * Determine whether or not the list is empty, if so display a relevant message
+     */
     private void determineEmptyList(List<Medicine> list) {
         TextView noMedicines = (TextView) findViewById(R.id.no_medicines);
         if (list.size() <= 0) {
@@ -266,29 +281,38 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         }
     }
 
-    // Load (or reload) the list of medicines
+    /**
+     * Load (or reload) the list of medicines
+     */
     private void loadListView() {
-        //The adapter which lists the medicines on the screen
-
         Resources res = getResources();
         String text = String.format(res.getString(R.string.date_added_alt), MedicineListActivity.KEY_ONSETACTION);
 
-        adapter = new SimpleAdapter(
+        mSimpleAdapter = new SimpleAdapter(
                 ProfileMedicineListActivity.this,
                 mMedicineMapList,
                 R.layout.list_item_date,
                 new String[]{MedicineListActivity.KEY_NAME, MedicineListActivity.KEY_TYPE, KEY_DATE_FORMAT},
                 new int[]{R.id.name, R.id.type, R.id.date});
-        mListView.setAdapter(adapter);
+        mListView.setAdapter(mSimpleAdapter);
     }
 
+    /**
+     * Show medicine conflicts on list item click
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         showConflicts(mMedicineMapList, i);
     }
 
-    // Determine whether (or not) there are any potential conflicts between the currently added
-    // medicines in the profile
+
+    /**
+     * Determine whether (or not) there are any potential conflicts between the currently added
+     * medicines in the profile
+     *
+     * @param medicines The currently added medicines
+     * @param position  The position indicating which medicine the user has tapped on
+     */
     private void showConflicts(List<HashMap<String, String>> medicines, int position) {
         String currentMedicine = medicines.get(position).get(MedicineListActivity.KEY_NAME);
         AlertDialog alertDialog = new AlertDialog.Builder(ProfileMedicineListActivity.this).create();
@@ -320,6 +344,10 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         alertDialog.show();
     }
 
+    /**
+     * Allow user to sort list by name, date added (most recent) and type, overriding base class
+     * version
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -347,36 +375,19 @@ public class ProfileMedicineListActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Sync the user and reload the list on Activity resume
+     */
     @Override
     public void onResume() {
         super.onResume();
-        navigationView.setCheckedItem(R.id.nav_profile_medicines);
+        mNavigationView.setCheckedItem(R.id.nav_profile_medicines);
         // Refresh the list on activity resume with latest details
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
+        if (mSimpleAdapter != null) {
+            mSimpleAdapter.notifyDataSetChanged();
         }
         mMedicineMapList.clear();
         syncUser();
     }
-
-    // Open the navigation bar when pressing the back button
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawers();
-        } else {
-            mDrawerLayout.openDrawer(GravityCompat.START);
-        }
-    }
-
-    // Add the addition action bar items based on the xml defined menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bar_menu_search, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
 }
 

@@ -1,17 +1,17 @@
 package jadomican.a4thyearproject.data;
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
 
-        import android.content.ContentResolver;
-        import android.net.Uri;
-        import android.provider.BaseColumns;
-
-        import java.util.Map;
-
-        import static com.amazonaws.services.pinpoint.model.JobStatus.CREATED;
+import android.content.ContentResolver;
+import android.net.Uri;
+import android.provider.BaseColumns;
 
 /**
- * Per the official Android documentation, this class defines all publically available
- * elements, like the authority, the content URIs, columns, and content types for each
- * element
+ * This class defines all publically available elements for the UserDetail class, like the authority, the content URIs,
+ * columns, and content types for each element
  */
 public class UserDetailsContentContract {
     /**
@@ -55,17 +55,17 @@ public class UserDetailsContentContract {
         public static final String BIO = "bio";
 
         /**
-         * The content field
+         * The date of birth field
          */
         public static final String DATEOFBIRTH = "dateOfBirth";
 
         /**
-         * The created field
+         * The first name field
          */
         public static final String FIRSTNAME = "firstName";
 
         /**
-         * The updated field
+         * The surname field
          */
         public static final String LASTNAME = "lastName";
 
@@ -124,12 +124,8 @@ public class UserDetailsContentContract {
         };
 
         /**
-         * The default sort order (SQLite syntax)
-         */
-        public static final String SORT_ORDER_DEFAULT = CREATED + " ASC";
-
-        /**
          * Build a URI for the provided details
+         *
          * @param profileId the ID of the provided details
          * @return the URI of the provided details
          */

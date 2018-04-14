@@ -1,13 +1,9 @@
 package jadomican.a4thyearproject;
 
-/**
+/*
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
- * Class representing the Graphic instance for rendering TextBlock position, size, and ID within
- * an associated graphic overlay view. Adapted from Google Mobile Vision tutorials available at:
- * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
  */
 
 import android.graphics.Canvas;
@@ -16,11 +12,17 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import jadomican.a4thyearproject.camera.GraphicOverlay;
+
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 
 import java.util.List;
 
+/**
+ * Class representing the Graphic instance for rendering TextBlock position, size, and ID within
+ * an associated graphic overlay view. Adapted from Google Mobile Vision tutorials available at:
+ * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
+ */
 public class OcrGraphic extends GraphicOverlay.Graphic {
 
     private int mId;
@@ -31,6 +33,9 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
     private static Paint sTextPaint;
     private final TextBlock mText;
 
+    /**
+     * Constructor for the actual graphic to be overlaid on the screen
+     */
     OcrGraphic(GraphicOverlay overlay, TextBlock text) {
         super(overlay);
 
@@ -102,7 +107,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
         // Break the text into multiple lines and draw each one according to its own bounding box.
         List<? extends Text> textComponents = mText.getComponents();
-        for(Text currentText : textComponents) {
+        for (Text currentText : textComponents) {
             float left = translateX(currentText.getBoundingBox().left);
             float bottom = translateY(currentText.getBoundingBox().bottom);
             canvas.drawText(currentText.getValue(), left, bottom, sTextPaint);

@@ -1,7 +1,9 @@
 package jadomican.a4thyearproject.data;
 
-/**
- * Created by jadom_000 on 21/01/2018.
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
  */
 
 import android.content.ContentProvider;

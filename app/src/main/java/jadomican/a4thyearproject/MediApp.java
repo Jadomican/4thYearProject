@@ -10,7 +10,9 @@ import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -35,17 +37,27 @@ import java.util.TimeZone;
 import jadomican.a4thyearproject.data.Medicine;
 import jadomican.a4thyearproject.data.UserDetail;
 
-/**
- * Created by jadom on 05/04/2018.
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
  */
 
-// Simple class used to statically get application context
+/**
+ * Class to store commonly used utility functions accessible by all Activities - even those that
+ * don't extend from the {@link BaseAppCompatActivity Base class}
+ */
 public class MediApp extends Application {
 
     public static final String KEY_NEGATIVE = "negative";
     public static final String KEY_POSITIVE = "positive";
     private static Context context;
 
+    /**
+     * Method to allow retrieval of app context
+     *
+     * @see MediApp#getAppContext()
+     */
     public void onCreate() {
         super.onCreate();
         MediApp.context = getApplicationContext();
@@ -55,17 +67,19 @@ public class MediApp extends Application {
         return MediApp.context;
     }
 
-    // Re-use this code wherever a toast is to be called
+    /**
+     * Re-use this code wherever a toast is to be called
+     */
     public static void customToast(String message, String type) {
         Toast toast = Toast.makeText(getAppContext(), message, Toast.LENGTH_LONG);
         View view = toast.getView();
         // Set toast BG colour
         switch (type) {
             case KEY_NEGATIVE:
-                view.getBackground().setColorFilter(Color.rgb(219, 68, 55), PorterDuff.Mode.SRC_IN);
+                view.getBackground().setColorFilter(ContextCompat.getColor(getAppContext(), R.color.danger_alt), PorterDuff.Mode.SRC_IN);
                 break;
             case KEY_POSITIVE:
-                view.getBackground().setColorFilter(Color.rgb(86, 164, 2), PorterDuff.Mode.SRC_IN);
+                view.getBackground().setColorFilter(ContextCompat.getColor(getAppContext(), R.color.positive), PorterDuff.Mode.SRC_IN);
                 break;
         }
         TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
@@ -73,8 +87,15 @@ public class MediApp extends Application {
         toast.show();
     }
 
-    // Re-usable code to set the listener for clicking a navigation menu item. This method is called
-    // in all activities that use the menu navigation bar as opposed to implementing this code in each activity
+    /**
+     * Re-usable code to set the listener for clicking a navigation menu item. This method is called
+     * in all activities that use the menu navigation bar as opposed to implementing this code in each activity
+     *
+     * @param navigationView    The navigation menu inside the drawer
+     * @param drawerLayout      The drawer (side bar) object
+     * @param currentMenuItemId The menu item to be highlighted. Not used for certain Activities including {@link OcrCaptureActivity OcrCaptureActivity}
+     * @param act               The calling activity
+     */
     public static void setNavigationListener(NavigationView navigationView, final DrawerLayout drawerLayout, final int currentMenuItemId, final AppCompatActivity act) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -120,15 +141,21 @@ public class MediApp extends Application {
                                     act.finish();
                                     break;
                             }
-                                act.startActivityIfNeeded(intent, 0);
-                                return true;
+                            act.startActivityIfNeeded(intent, 0);
+                            return true;
                         }
                     }
                 });
     }
 
-    // Return a properly formatted date based on the user's device settings
     static DateFormat df = new SimpleDateFormat(ProfileMedicineListActivity.DATE_FORMAT_NO_ZONE);
+
+    /**
+     * Return a properly formatted date based on the user's device settings
+     *
+     * @param date The date to be parsed into the user's local format
+     * @return
+     */
     public static String getFormattedDate(String date) {
         try {
             df.setTimeZone(TimeZone.getDefault());
@@ -141,8 +168,13 @@ public class MediApp extends Application {
         }
     }
 
-    // The dynamoDB database returns all values as Strings. This is a helper method to be called
-    // when a conversion to List format is required.
+
+    /**
+     * The dynamoDB database returns all values as Strings. This is a helper method to be called
+     * when a conversion to List format is required.
+     *
+     * @param stringList The string version of a list of Medicines
+     */
     public static List<Medicine> medicineStringToList(String stringList) {
         List<Medicine> listMedicines = new ArrayList<>();
         // In case of String being null, return empty list
@@ -174,6 +206,9 @@ public class MediApp extends Application {
         return listMedicines;
     }
 
+    /**
+     * Determine whether or not the device is connected to the internet
+     */
     public static boolean isConnectedToInternet() {
         ConnectivityManager connectivity = (ConnectivityManager) getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -188,6 +223,13 @@ public class MediApp extends Application {
         return false;
     }
 
+    /**
+     * Display a custom dialog anywhere it's required
+     *
+     * @param activity The calling activity
+     * @param title    The dialog title
+     * @param message  The dialog message
+     */
     public static void displayDialog(Activity activity, String title, String message) {
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle(title);
@@ -200,6 +242,5 @@ public class MediApp extends Application {
                 });
         alertDialog.show();
     }
-
 
 }

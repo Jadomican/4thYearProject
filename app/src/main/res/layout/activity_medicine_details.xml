@@ -43,7 +43,8 @@
                 android:drawablePadding="5dip"
                 android:drawableRight="@drawable/ic_speak"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="invisible"/>
 
             <Button
                 android:id="@+id/addMedicineButton"

@@ -1,15 +1,9 @@
 package jadomican.a4thyearproject.camera;
 
-/**
+/*
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
- * Classes to manage the camera in conjunction with an underlying Mobile Vision detector. The camera
- * source used attempts to balance processing as many preview frames as possible while also
- * minimising lag. Some frames may be dropped to maintain a lag-free user experience, depending on
- * the capabilities of the device's camera. Adapted from Google Mobile Vision tutorials available
- * at: https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
  */
 
 import android.Manifest;
@@ -46,6 +40,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Classes to manage the camera in conjunction with an underlying Mobile Vision detector. The camera
+ * source used attempts to balance processing as many preview frames as possible while also
+ * minimising lag. Some frames may be dropped to maintain a lag-free user experience, depending on
+ * the capabilities of the device's camera. Adapted from Google Mobile Vision tutorials available
+ * at: https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
+ */
 @SuppressWarnings("deprecation")
 public class CameraSource {
 
@@ -71,7 +72,8 @@ public class CameraSource {
             Camera.Parameters.FOCUS_MODE_MACRO
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface FocusMode {}
+    private @interface FocusMode {
+    }
 
     @StringDef({
             Camera.Parameters.FLASH_MODE_ON,
@@ -81,7 +83,8 @@ public class CameraSource {
             Camera.Parameters.FLASH_MODE_TORCH
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface FlashMode {}
+    private @interface FlashMode {
+    }
 
     private Context mContext;
 

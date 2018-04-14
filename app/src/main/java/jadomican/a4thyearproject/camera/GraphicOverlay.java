@@ -4,9 +4,6 @@ package jadomican.a4thyearproject.camera;
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
- * Classes representing the graphic overlay, within which graphic objects (blocks of text) are
- * rendered onto said overlay on the camera screen
  */
 
 import android.content.Context;
@@ -19,6 +16,10 @@ import com.google.android.gms.vision.CameraSource;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Classes representing the graphic overlay, within which graphic objects (blocks of text) are
+ * rendered onto said overlay on the camera screen
+ */
 public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private final Object mLock = new Object();
     private int mPreviewWidth;
@@ -43,10 +44,10 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         /**
          * Draw the graphic on the supplied canvas. Drawing uses the following methods to
          * convert to view coordinates for the graphics that are drawn:
-         *
+         * <p>
          * scaleX(float) and scaleY(float) adjust the size of the supplied value from the preview
          * scale to the view scale.
-         *
+         * <p>
          * translateX(float) and translateY(float) adjust the coordinate
          * from the preview's coordinate system to the view coordinate system.
          */
@@ -134,6 +135,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     /**
      * Returns the first graphic, if any, that exists at the provided absolute screen coordinates.
      * These coordinates will be offset by the relative screen position of this view.
+     *
      * @return First graphic containing the point, or null if no text is detected.
      */
     public T getGraphicAtLocation(float rawX, float rawY) {

@@ -1,93 +1,109 @@
 package jadomican.a4thyearproject;
 
-/**
+/*
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- * <p>
- * The home screen activity of the application, loaded after the initial login. Contains 'links' to
- * other main functionality of the app, such as editing user profile and searching for medicines
  */
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.app.ActionBar;
 
-import com.amazonaws.mobile.auth.core.IdentityManager;
 
-public class MainActivity extends AppCompatActivity {
-    private NavigationView mNavigationView;
-    private DrawerLayout mDrawerLayout;
+/**
+ * The home screen activity of the application, loaded after the initial login. Contains 'links' to
+ * other main functionality of the app, such as editing user profile and searching for medicines
+ */
+public class MainActivity extends BaseAppCompatActivity {
 
+    /**
+     * Override the onCreate method in BaseAppCompatActivity with Activity-specific code
+     *
+     * @see BaseAppCompatActivity#onCreate(Bundle)
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        mNavigationView.setCheckedItem(R.id.nav_home);
 
         Button medicineSearchButton = (Button) findViewById(R.id.medicineSearchButton);
         Button cameraSearchButton = (Button) findViewById(R.id.cameraSearchButton);
-
-        // Set listener for information popup
-        setTouchListener(medicineSearchButton,
+        // Set listener for button information popup
+        setButtonTouchListener(medicineSearchButton,
                 getResources().getString(R.string.medicine_search_info_title),
                 getResources().getString(R.string.medicine_search_info_message));
-        setTouchListener(cameraSearchButton,
+        setButtonTouchListener(cameraSearchButton,
                 getResources().getString(R.string.camera_info_title),
                 getResources().getString(R.string.camera_info_message));
+    }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
-        MediApp.setNavigationListener(mNavigationView, mDrawerLayout, R.id.nav_home, this);
+    // Pass Activity Resources to the Base class for initialisation
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mNavigationView.setCheckedItem(R.id.nav_home);
+    protected int getMenuItemResourceId() {
+        return R.id.nav_home;
     }
 
+    @Override
+    protected int getMenuResourceId() {
+        return R.menu.bar_menu;
+    }
+
+    @Override
+    protected String getHelpTitle() {
+        return getString(R.string.bar_main_help_title);
+    }
+
+    @Override
+    protected String getHelpMessage() {
+        return getString(R.string.bar_main_help_message);
+    }
+
+
+    /**
+     * Button to go to the user's list of profiles
+     */
     public void goToProfileHub(View view) {
         Context context = view.getContext();
         Intent intent = new Intent(context, ProfileMedicineListActivity.class);
-        context.startActivity(intent);
+        startActivityIfNeeded(intent, 0);
     }
 
+    /**
+     * Initiate a search. Upon activation the search bar appears at the top of the screen
+     */
     public void goToSearchMedicines(View view) {
         onSearchRequested();
     }
 
+    /**
+     * Proceed to the Camera Search activity
+     */
     public void goToCameraSearch(View view) {
         Context context = view.getContext();
         Intent intent = new Intent(context, OcrCaptureActivity.class);
-        context.startActivity(intent);
+        startActivityIfNeeded(intent, 0);
     }
 
-    // Method to contextually display information about a feature when the 'i' symbol is
-    // tapped. Takes a button and messages to be displayed as parameters, also passing in the alert
-    // title and messages
-    public void setTouchListener(final Button button, final String title, final String message) {
+    /**
+     * Method to contextually display information about a feature when the 'i' symbol is
+     * tapped. Takes a button and messages to be displayed as parameters, also passing in the alert
+     * title and messages
+     *
+     * @param button  The button for which the information icon will appear
+     * @param title   The title of the dialog that appears on touch
+     * @param message The message of the dialog that appears on touch
+     */
+    public void setButtonTouchListener(final Button button, final String title, final String message) {
         // The following comment stops the IDE from warning about overriding the performClick()
         // method, an optional setOnTouchListener method:
         // noinspection AndroidLintClickableViewAccessibility
@@ -115,52 +131,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-            case R.id.action_search:
-                onSearchRequested();
-                return true;
-            case R.id.log_out:
-                IdentityManager id = AWSProvider.getInstance().getIdentityManager();
-                id.signOut();
-                Context context = getApplicationContext();
-                Intent intent = new Intent(context, AuthenticatorActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                context.startActivity(intent);
-                finish();
-                return true;
-            case R.id.action_help:
-                MediApp.displayDialog(this,
-                        getString(R.string.bar_main_help_title),
-                        getString(R.string.bar_main_help_message));
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    // Open the navigation bar when pressing the back button
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawers();
-        } else {
-            mDrawerLayout.openDrawer(GravityCompat.START);
-        }
-    }
-
-    // Add the additional action bar items based on the xml defined menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bar_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
 }

@@ -1,35 +1,37 @@
 package jadomican.a4thyearproject;
 
-/**
- * Created by jadom_000 on 27/01/2018.
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
  */
 
-        import android.app.DatePickerDialog;
-        import android.content.AsyncQueryHandler;
-        import android.content.ContentResolver;
-        import android.content.ContentValues;
-        import android.database.Cursor;
-        import android.net.Uri;
-        import android.os.Bundle;
-        import android.support.v4.app.Fragment;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.Button;
-        import android.widget.DatePicker;
-        import android.widget.EditText;
+import android.app.DatePickerDialog;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 
-        import jadomican.a4thyearproject.data.UserDetail;
-        import jadomican.a4thyearproject.data.UserDetailsContentContract;
+import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsClient;
+import com.amazonaws.mobileconnectors.pinpoint.analytics.AnalyticsEvent;
 
-        import java.util.Calendar;
+import jadomican.a4thyearproject.data.UserDetail;
+import jadomican.a4thyearproject.data.UserDetailsContentContract;
+
+import java.util.Calendar;
 
 /**
- * A fragment representing a single Profile detail screen.
- * This fragment is either contained in a { ListActivity}
- * in two-pane mode (on tablets) or a { UserDetailActivity}
- * on handsets.
+ * A fragment representing a single user profile edit details screen.
  */
 public class UserDetailFragment extends Fragment {
     /**
@@ -42,25 +44,28 @@ public class UserDetailFragment extends Fragment {
      * The content this fragment is presenting.
      */
     private UserDetail mItem;
-    private Uri itemUri;
+    private Uri mItemUri;
 
     /**
-     * Content Resolver
+     * Content Resolver which provides access to the content provider
+     *
+     * @see jadomican.a4thyearproject.data.UserDetailsContentProvider
      */
     private ContentResolver contentResolver;
 
     /**
-     * Is this an insert or an update?
+     * Is this an insert or an update? This would handle a case in which the user has no previous
+     * record in the database
      */
     private boolean isUpdate;
 
     /**
      * The component bindings
      */
-    EditText editBio;
-    EditText editDateOfBirth;
-    EditText editFirstName;
-    EditText editLastName;
+    private EditText mEditBio;
+    private EditText mEditDateOfBirth;
+    private EditText mEditFirstName;
+    private EditText mEditLastName;
 
     /**
      * Required empty constructor for the fragment manager to instantiate the
@@ -74,6 +79,9 @@ public class UserDetailFragment extends Fragment {
     private static final int UPDATE_TOKEN = 1002;
     private static final int INSERT_TOKEN = 1003;
 
+    /**
+     * Unbundle the profile id that this screen is representing.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,14 +95,16 @@ public class UserDetailFragment extends Fragment {
         mItem = new UserDetail();
         if (arguments != null && arguments.containsKey(ARG_ITEM_ID)) {
             String itemId = getArguments().getString(ARG_ITEM_ID);
-            itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
+            mItemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
             syncUser();
         } else {
             isUpdate = false;
         }
     }
 
-    // Sync user profile with the latest details from the database
+    /**
+     * Sync user profile with the latest details from the database
+     */
     public void syncUser() {
         // Network tasks must not be performed in the UI thread. Hence the Async Task used here
         AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
@@ -105,17 +115,19 @@ public class UserDetailFragment extends Fragment {
                 mItem = UserDetail.fromCursor(cursor);
                 isUpdate = true;
 
-                editDateOfBirth.setText(mItem.getDateOfBirth());
-                editBio.setText(mItem.getBio());
-                editFirstName.setText(mItem.getFirstName());
-                editLastName.setText(mItem.getLastName());
+                mEditDateOfBirth.setText(mItem.getDateOfBirth());
+                mEditBio.setText(mItem.getBio());
+                mEditFirstName.setText(mItem.getFirstName());
+                mEditLastName.setText(mItem.getLastName());
             }
         };
-        queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
+        queryHandler.startQuery(QUERY_TOKEN, null, mItemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
 
     }
 
-    // Handle the fragment being paused
+    /**
+     * Handle the fragment being paused
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -129,26 +141,26 @@ public class UserDetailFragment extends Fragment {
 
         // Here we determine whether or not the user has updated the details in any of the profile
         // fields. If not we inform the user and abort the unnecessary update network operation
-        if (!editFirstName.getText().toString().trim().equals(mItem.getFirstName())) {
-            mItem.setFirstName(editFirstName.getText().toString().trim());
+        if (!mEditFirstName.getText().toString().trim().equals(mItem.getFirstName())) {
+            mItem.setFirstName(mEditFirstName.getText().toString().trim());
             isUpdated = true;
-            Log.d("Profile Change","fName");
+            Log.d("Profile Change", "fName");
         }
-        if (!editLastName.getText().toString().trim().equals(mItem.getLastName().trim())) {
-            mItem.setLastName(editLastName.getText().toString().trim());
+        if (!mEditLastName.getText().toString().trim().equals(mItem.getLastName().trim())) {
+            mItem.setLastName(mEditLastName.getText().toString().trim());
             isUpdated = true;
-            Log.d("Profile Change","lName");
+            Log.d("Profile Change", "lName");
         }
-        if (!editDateOfBirth.getText().toString().trim().equals(mItem.getDateOfBirth())) {
-            mItem.setDateOfBirth(editDateOfBirth.getText().toString().trim());
+        if (!mEditDateOfBirth.getText().toString().trim().equals(mItem.getDateOfBirth())) {
+            mItem.setDateOfBirth(mEditDateOfBirth.getText().toString().trim());
             isUpdated = true;
-            Log.d("Profile Change","dob");
+            Log.d("Profile Change", "dob");
 
         }
-        if (!editBio.getText().toString().trim().equals(mItem.getBio())) {
-            mItem.setBio(editBio.getText().toString().trim());
+        if (!mEditBio.getText().toString().trim().equals(mItem.getBio())) {
+            mItem.setBio(mEditBio.getText().toString().trim());
             isUpdated = true;
-            Log.d("Profile Change","bio");
+            Log.d("Profile Change", "bio");
         }
 
         // Convert to ContentValues and store in the database.
@@ -172,51 +184,54 @@ public class UserDetailFragment extends Fragment {
             };
             if (isUpdate) {
 
-                queryHandler.startUpdate(UPDATE_TOKEN, null, itemUri, values, null, null);
+                queryHandler.startUpdate(UPDATE_TOKEN, null, mItemUri, values, null, null);
             } else {
                 queryHandler.startInsert(INSERT_TOKEN, null, UserDetailsContentContract.UserDetails.CONTENT_URI, values);
-                //isUpdate = true;    // Anything from now on is an update
 
-//                // Send Custom Event to Amazon Pinpoint
-//                final AnalyticsClient mgr = AWSProvider.getInstance()
-//                        .getPinpointManager()
-//                        .getAnalyticsClient();
-//                final AnalyticsEvent evt = mgr.createEvent("AddProfile")
-//                        .withAttribute("profileId", mItem.getProfileId());
-//                mgr.recordEvent(evt);
-//                mgr.submitEvents();
+                // Send Custom Event to Amazon Pinpoint
+                final AnalyticsClient mgr = AWSProvider.getInstance()
+                        .getPinpointManager()
+                        .getAnalyticsClient();
+                final AnalyticsEvent evt = mgr.createEvent("EditProfile")
+                        .withAttribute("profileId", mItem.getProfileId());
+                mgr.recordEvent(evt);
+                mgr.submitEvents();
             }
-        }
-        else {
+        } else {
             MediApp.customToast("No Changes Made", MediApp.KEY_NEGATIVE);
         }
     }
 
+    /**
+     * Sync user on resume to maintain latest details
+     */
     @Override
     public void onResume() {
         super.onResume();
         syncUser();
     }
 
-
+    /**
+     * Populate the editable text boxes on view creation.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Get a reference to the root view
         View rootView = inflater.inflate(R.layout.user_detail, container, false);
 
         // Update the text in the editor
-        editDateOfBirth = (EditText) rootView.findViewById(R.id.edit_dob);
-        editBio = (EditText) rootView.findViewById(R.id.edit_bio);
-        editFirstName = (EditText) rootView.findViewById(R.id.edit_first_name);
-        editLastName = (EditText) rootView.findViewById(R.id.edit_last_name);
+        mEditDateOfBirth = (EditText) rootView.findViewById(R.id.edit_dob);
+        mEditBio = (EditText) rootView.findViewById(R.id.edit_bio);
+        mEditFirstName = (EditText) rootView.findViewById(R.id.edit_first_name);
+        mEditLastName = (EditText) rootView.findViewById(R.id.edit_last_name);
 
-        editDateOfBirth.setText(mItem.getDateOfBirth());
-        editBio.setText(mItem.getBio());
-        editFirstName.setText(mItem.getFirstName());
-        editLastName.setText(mItem.getLastName());
+        mEditDateOfBirth.setText(mItem.getDateOfBirth());
+        mEditBio.setText(mItem.getBio());
+        mEditFirstName.setText(mItem.getFirstName());
+        mEditLastName.setText(mItem.getLastName());
 
         // Create a listener to allow user to choose date from a calendar
-        editDateOfBirth.setOnClickListener(new View.OnClickListener() {
+        mEditDateOfBirth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Calendar c = Calendar.getInstance();
@@ -228,7 +243,7 @@ public class UserDetailFragment extends Fragment {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                editDateOfBirth.setText(String.format("%04d-%02d-%02d", year, (monthOfYear + 1), dayOfMonth));
+                                mEditDateOfBirth.setText(String.format("%04d-%02d-%02d", year, (monthOfYear + 1), dayOfMonth));
                             }
                         }, mYear, mMonth, mDay);
                 datePickerDialog.show();
@@ -237,11 +252,9 @@ public class UserDetailFragment extends Fragment {
 
         // Button to allow user to save new details to profile
         Button updateProfileButton = (Button) rootView.findViewById(R.id.update_profile_button);
-        updateProfileButton.setOnClickListener(new View.OnClickListener()
-        {
+        updateProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 // Save data on button click
                 saveData();
             }

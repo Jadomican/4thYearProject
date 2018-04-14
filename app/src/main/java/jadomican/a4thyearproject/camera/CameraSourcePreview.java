@@ -4,10 +4,6 @@ package jadomican.a4thyearproject.camera;
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
- * Class representing the camera view shown on the device screen when accessing camera
- * functionality of the app. Adapted from the Google Mobile Vision tutorials available at:
- * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
  */
 
 import android.Manifest;
@@ -25,6 +21,11 @@ import com.google.android.gms.common.images.Size;
 
 import java.io.IOException;
 
+/**
+ * Class representing the camera view shown on the device screen when accessing camera
+ * functionality of the app. Adapted from the Google Mobile Vision tutorials available at:
+ * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
+ */
 public class CameraSourcePreview extends ViewGroup {
 
     private static final String TAG = "CameraSourcePreview";
@@ -111,7 +112,7 @@ public class CameraSourcePreview extends ViewGroup {
             try {
                 startIfReady();
             } catch (SecurityException se) {
-                Log.e(TAG,"Do not have permission to start the camera", se);
+                Log.e(TAG, "Do not have permission to start the camera", se);
             } catch (IOException e) {
                 Log.e(TAG, "Could not start camera source.", e);
             }
@@ -181,7 +182,7 @@ public class CameraSourcePreview extends ViewGroup {
         try {
             startIfReady();
         } catch (SecurityException se) {
-            Log.e(TAG,"Do not have permission to start the camera", se);
+            Log.e(TAG, "Do not have permission to start the camera", se);
         } catch (IOException e) {
             Log.e(TAG, "Could not start camera source.", e);
         }

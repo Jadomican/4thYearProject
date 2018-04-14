@@ -3,7 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="positive">#56a402</color>
     <color name="danger">#d72a30</color>
+    <color name="danger_alt">#db4437</color>
+    <color name="delete_red">#F93F25</color>
     <color name="mediBlue">#008ae6</color>
     <color name="mediBlueAlt">#1a7cbe</color>
     <color name="white">#FFFFFF</color>

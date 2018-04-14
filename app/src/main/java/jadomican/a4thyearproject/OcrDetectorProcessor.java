@@ -1,13 +1,9 @@
 package jadomican.a4thyearproject;
 
-/**
+/*
  * Jason Domican
  * Final Year Project
  * Institute of Technology Tallaght
- *
- * This class is a simple Processor which gets detected TextBlocks and adds them to the overlay
- * as OcrGraphics. Adapted from Google Mobile Vision tutorials available at:
- * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
  */
 
 import android.util.Log;
@@ -17,6 +13,11 @@ import jadomican.a4thyearproject.camera.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 
+/**
+ * This class is a simple Processor which gets detected TextBlocks and adds them to the overlay
+ * as OcrGraphics. Adapted from Google Mobile Vision tutorials available at:
+ * https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/
+ */
 public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
 
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;

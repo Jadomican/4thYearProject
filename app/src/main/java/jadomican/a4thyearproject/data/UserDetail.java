@@ -1,8 +1,11 @@
 package jadomican.a4thyearproject.data;
 
-/**
- * Created by jadom_000 on 27/01/2018.
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
  */
+
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -18,12 +21,11 @@ import jadomican.a4thyearproject.MediApp;
 
 /**
  * The User Profile model
- *
- * _id              The internal ID - only relevant to the current device
+ * <p>
+ * _id              The internal ID - only relevant to the current device user
  * profileId        The global ID - should be unique globally
  * addedMedicines   The JSON Array storing added medicine details
  */
-
 public class UserDetail {
     private long id = -1;
     private String profileId;
@@ -33,6 +35,9 @@ public class UserDetail {
     private String firstName;
     private String lastName;
 
+    /**
+     * Overloaded constructor to create a new User object
+     */
     public UserDetail(long id, String profileId, List<Medicine> addedMedicines, String dateOfBirth,
                       String bio, String firstName, String lastName) {
         this.id = id;
@@ -72,7 +77,7 @@ public class UserDetail {
     }
 
     /**
-     * Read a string from a key in the cursor. If the key doesn't exist, return a default value
+     * Read a string from a column key in the cursor. If the key doesn't exist, return a default value
      */
     private static String getString(Cursor c, String col, String defaultValue) {
         if (c.getColumnIndex(col) >= 0 && c.getString(c.getColumnIndex(col)) != null) {
@@ -83,7 +88,7 @@ public class UserDetail {
     }
 
     /**
-     * Read a long value from a key in the cursor. If the key doesn't exist, return a default value
+     * Read a long value from a column key in the cursor. If the key doesn't exist, return a default value
      */
     private static long getLong(Cursor c, String col, long defaultValue) {
         if (c.getColumnIndex(col) >= 0) {
@@ -108,21 +113,29 @@ public class UserDetail {
 
     /**
      * Returns the internal ID
+     *
      * @return the internal ID
      */
-    public long getId() { return id; }
+    public long getId() {
+        return id;
+    }
 
     /**
      * Sets the internal ID
+     *
      * @param id the new internal ID
      */
-    public void setId(long id) { this.id = id;}
+    public void setId(long id) {
+        this.id = id;
+    }
 
 
     /**
      * Returns the profileId
      */
-    public String getProfileId() { return profileId; }
+    public String getProfileId() {
+        return profileId;
+    }
 
     /**
      * Sets the profileId
@@ -143,13 +156,15 @@ public class UserDetail {
 
     /**
      * Returns the age
+     *
      * @return the age
      */
-    public String getDateOfBirth() { return dateOfBirth; }
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
 
     /**
      * Sets the age
-     * @param dateOfBirth the new age
      */
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
@@ -158,13 +173,15 @@ public class UserDetail {
 
     /**
      * Returns the bio
+     *
      * @return the bio
      */
-    public String getBio() { return bio; }
+    public String getBio() {
+        return bio;
+    }
 
     /**
      * Sets the bio
-     * @param bio the new title
      */
     public void setBio(String bio) {
         this.bio = bio;
@@ -172,48 +189,39 @@ public class UserDetail {
 
     /**
      * Returns the fname
-     * @return the fname
+     *
+     * @return the First name
      */
-    public String getFirstName() { return firstName; }
+    public String getFirstName() {
+        return firstName;
+    }
 
     /**
-     * Sets the fname
-     * @param firstName the first name
+     * Sets the First name
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     /**
-     * Returns the fname
-     * @return the fname
+     * Returns the Surname
+     *
+     * @return the Surname
      */
-    public String getLastName() { return lastName; }
+    public String getLastName() {
+        return lastName;
+    }
 
     /**
-     * Sets the lname
-     * @param lastName the last name
+     * Sets the Surname
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     /**
-     * Updates the profile
-     * @param dateOfBirth the new age
-     * @param bio the new bio
-     */
-
-    public void updateUserDetail(List<Medicine> addedMedicines, String bio, String dateOfBirth, String firstName, String lastName) {
-        setAddedMedicines(addedMedicines);
-        setBio(bio);
-        setDateOfBirth(dateOfBirth);
-        setFirstName(firstName);
-        setLastName(lastName);
-    }
-
-    /**
      * The string version of the class
+     *
      * @return the class unique descriptor
      */
     @Override

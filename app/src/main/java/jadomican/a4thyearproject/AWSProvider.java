@@ -1,10 +1,9 @@
 package jadomican.a4thyearproject;
 
-/**
+/*
  * Jason Domican
- *
- * a central place to add code that accesses AWS resources
- *
+ * Final Year Project
+ * Institute of Technology Tallaght
  */
 
 import android.content.Context;
@@ -13,7 +12,8 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.mobile.auth.core.IdentityManager;
 import com.amazonaws.mobile.auth.userpools.CognitoUserPoolsSignInProvider;
 import com.amazonaws.mobile.config.AWSConfiguration;
-import jadomican.a4thyearproject.data.UserDetailDO;
+
+
 import com.amazonaws.mobileconnectors.pinpoint.PinpointConfiguration;
 import com.amazonaws.mobileconnectors.pinpoint.PinpointManager;
 
@@ -21,6 +21,9 @@ import com.amazonaws.mobileconnectors.pinpoint.PinpointManager;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
+/**
+ * A central place to add code that accesses AWS resources
+ */
 public class AWSProvider {
     private static AWSProvider instance = null;
     private Context context;
@@ -59,10 +62,16 @@ public class AWSProvider {
         return this.awsConfiguration;
     }
 
+    /**
+     * Return the AWS Identity Manager. Called when signing in, logging out etc.
+     */
     public IdentityManager getIdentityManager() {
         return IdentityManager.getDefaultIdentityManager();
     }
 
+    /**
+     * Get the AWS Pinpoint Manager. Used to enable logging of custom statistics
+     */
     public PinpointManager getPinpointManager() {
         if (pinpointManager == null) {
             final AWSCredentialsProvider cp = getIdentityManager().getCredentialsProvider();
@@ -73,6 +82,10 @@ public class AWSProvider {
         return pinpointManager;
     }
 
+    /**
+     * Return a DynamoDBMapper, allowing JSON objects to be mapped to Dynamo objects for storing in
+     * the backend database
+     */
     public DynamoDBMapper getDynamoDBMapper() {
         if (dbMapper == null) {
             final AWSCredentialsProvider cp = getIdentityManager().getCredentialsProvider();

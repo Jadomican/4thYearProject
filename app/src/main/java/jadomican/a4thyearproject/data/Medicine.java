@@ -1,27 +1,23 @@
 package jadomican.a4thyearproject.data;
 
-import android.content.res.Resources;
-import android.support.annotation.NonNull;
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBDocument;
-
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import jadomican.a4thyearproject.MediApp;
 import jadomican.a4thyearproject.ProfileMedicineListActivity;
-import jadomican.a4thyearproject.R;
 
 /**
  * A model to represent a medicine object.
@@ -37,8 +33,12 @@ public class Medicine implements Serializable {
     private String conflict;
     private String date;
 
-    public Medicine() {}
+    public Medicine() {
+    }
 
+    /**
+     * Constructor to initialise a Medicine object with values
+     */
     public Medicine(String id, String name, String type, String onsetaction, String imageurl, String conflict, String date) {
         this.id = id;
         this.name = name;
@@ -47,6 +47,18 @@ public class Medicine implements Serializable {
         this.imageurl = imageurl;
         this.conflict = conflict;
         this.date = date;
+    }
+
+    /**
+     * Overloaded constructor with no date parameter
+     */
+    public Medicine(String id, String name, String type, String onsetaction, String imageurl, String conflict) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.onsetaction = onsetaction;
+        this.imageurl = imageurl;
+        this.conflict = conflict;
     }
 
     public String getMedicineDate() {
@@ -101,11 +113,17 @@ public class Medicine implements Serializable {
         return conflict;
     }
 
+
     public void setMedicineConflict(String conflict) {
         this.conflict = conflict;
     }
 
-    // Method to allow various sorting algorithms on a list of medicines
+    /**
+     * Method to allow various sorting algorithms on a list of medicines
+     *
+     * @param list     The list to be sorted
+     * @param sortType The sorting mechanism to be performed
+     */
     public static List<Medicine> sort(List<Medicine> list, String sortType) throws ParseException {
         switch (sortType) {
             case ProfileMedicineListActivity.SORT_NAME:

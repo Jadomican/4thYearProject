@@ -1,5 +1,11 @@
 package jadomican.a4thyearproject;
 
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -23,36 +29,42 @@ import java.util.List;
  * situations as it can affect performance/ response time while the UI thread waits for the
  * JSON response.
  */
-
 public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
+
+    private ProgressDialog mDialog;
+    private Listener mListener;
 
     public LoadJSONTask(Listener listener, MedicineListActivity activity) {
 
         mListener = listener;
 
         //Display a progress bar to the user while the dataset is loading
-        //this.activity = activity;
-        dialog = new ProgressDialog(activity);
+        mDialog = new ProgressDialog(activity);
     }
-
-    private ProgressDialog dialog;
-    //private MedicineListActivity activity;
 
     //Utilising interfaces here to enforce use of the onLoaded() and onError() methods
     public interface Listener {
 
         void onLoaded(List<Medicine> medicineList);
+
         void onError();
     }
 
-    private Listener mListener;
 
+    /**
+     * Show a progress dialog while the page loads
+     */
     @Override
     protected void onPreExecute() {
-        this.dialog.setMessage(MediApp.getAppContext().getResources().getString(R.string.loading_many));
-        this.dialog.show();
+        this.mDialog.setMessage(MediApp.getAppContext().getResources().getString(R.string.loading_many));
+        this.mDialog.show();
     }
 
+    /**
+     * Convert the response to the format required for the calling classes
+     *
+     * @see MedicineResponse
+     */
     @Override
     protected MedicineResponse doInBackground(String... strings) {
         try {
@@ -69,6 +81,9 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
         }
     }
 
+    /**
+     * Dismiss the dialog and load up the list, or inform the user if there is an error
+     */
     @Override
     protected void onPostExecute(MedicineResponse response) {
 
@@ -78,12 +93,17 @@ public class LoadJSONTask extends AsyncTask<String, Void, MedicineResponse> {
             mListener.onError();
         }
 
-        if (dialog.isShowing()) {
-            dialog.dismiss();
+        if (mDialog.isShowing()) {
+            mDialog.dismiss();
         }
     }
 
-    //Set up HTTP GET url connection
+
+    /**
+     * Set up HTTP GET url connection and load the resulting JSON response
+     *
+     * @param jsonURL The API invocation URL to be queried
+     */
     private String loadJSON(String jsonURL) throws IOException {
         URL url = new URL(jsonURL);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

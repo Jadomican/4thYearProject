@@ -1,5 +1,11 @@
 package jadomican.a4thyearproject.data;
 
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
+
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBIndexHashKey;
@@ -8,11 +14,13 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBRangeKey
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+
+/**
+ * The model representing a DynamoDB user profile object, which can be stored/ queried from an existing
+ * user record
+ */
 @DynamoDBTable(tableName = "yearproject-mobilehub-87068747-user-detail")
-
 public class UserDetailDO {
     private String _userId;
     private String _profileId;

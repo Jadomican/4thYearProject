@@ -1,23 +1,22 @@
 package jadomican.a4thyearproject;
 
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
+
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.app.ActionBar;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -28,24 +27,33 @@ import java.util.HashMap;
 import jadomican.a4thyearproject.data.Medicine;
 
 /**
- * An activity to represent the medicine search/ list screen.
+ * An activity to represent the medicine search/ list screen. This Activity is listed in the manifest
+ * as Searchable, meaning that search terms can be delivered here via calling onSearchRequested()
  */
 
-public class MedicineListActivity extends AppCompatActivity
+public class MedicineListActivity extends BaseAppCompatActivity
         implements LoadJSONTask.Listener, AdapterView.OnItemClickListener {
 
     private ListView mListView;
-    SimpleAdapter adapter;
-    private DrawerLayout mDrawerLayout;
-    private NavigationView navigationView;
-    private String query;
-    //The url from which to invoke the API and fetch the JSON result
-    public String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
+    private SimpleAdapter mSimpleAdapter;
+    private String mSearchQery;
 
-    //List of HashMaps to represent the list of medicines to be displayed
+    /**
+     * The url from which to invoke the API and fetch the JSON result
+     */
+    private final String URL = "https://xjahc9ekrl.execute-api.eu-west-1.amazonaws.com/dev/medicines";
+
+    /**
+     * List of HashMaps to represent the list of medicines to be displayed by the SimpleAdapter
+     */
     private List<HashMap<String, String>> mMedicineMapList = new ArrayList<>();
-    private List<Medicine> medicinesResponse;
 
+    /**
+     * List of medicine objects to model the API query response
+     */
+    private List<Medicine> mMedicinesResponse;
+
+    // Keys to identify various fields related to a particular medicine
     public static final String KEY_ID = "id";
     public static final String KEY_NAME = "name";
     public static final String KEY_TYPE = "type";
@@ -55,57 +63,85 @@ public class MedicineListActivity extends AppCompatActivity
     public static final String KEY_QUERY = "query";
     public static final String KEY_DATE = "date";
 
+    /**
+     * Overrides the BaseAppCompatActivity onCreate method with Activity-specific tasks
+     *
+     * @see BaseAppCompatActivity#onCreate(Bundle)
+     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_medicine_list);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
-        MediApp.setNavigationListener(navigationView, mDrawerLayout, -1, this);
-
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setOnItemClickListener(this);
         getIntentAndLoad();
     }
 
+
+    // Return unique Activity resources to the super class for initialisation
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_medicine_list;
+    }
+
+    // No menu item for search results page
+    @Override
+    protected int getMenuItemResourceId() {
+        return -1;
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return R.menu.bar_menu_search_no_date;
+    }
+
+    @Override
+    protected String getHelpTitle() {
+        return getString(R.string.bar_medicine_search_help_title);
+    }
+
+    @Override
+    protected String getHelpMessage() {
+        return getString(R.string.bar_medicine_search_help_message);
+    }
+
+    /**
+     * Extract Intent extras to determine where the search query came from - either the search bar
+     * at top top of every screen or the Camera Search. Then manipulate the API query URL request
+     * base on this search term
+     */
     private void getIntentAndLoad() {
         // Get the intent, verify that a search occurred
         String queryURL = "";
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY).trim();
+            mSearchQery = intent.getStringExtra(SearchManager.QUERY).trim();
             // Append the query to the URL
-            queryURL = (URL + "/" + query.toLowerCase());
+            queryURL = (URL + "/" + mSearchQery.toLowerCase());
             Log.d("Search", "SEARCHED:" + URL);
         } else if (intent.getStringExtra(MedicineListActivity.KEY_QUERY) != null) {
-            query = intent.getStringExtra(MedicineListActivity.KEY_QUERY);
-            queryURL = (URL + "/" + query.toLowerCase());
+            mSearchQery = intent.getStringExtra(MedicineListActivity.KEY_QUERY);
+            queryURL = (URL + "/" + mSearchQery.toLowerCase());
         }
         // Invoke API and return results
         new LoadJSONTask(this, this).execute(queryURL);
     }
 
-    // Allow user to re-search within search results page
+    /**
+     * Allow user to re-search within search results page
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
+        if (mSimpleAdapter != null) {
+            mSimpleAdapter.notifyDataSetChanged();
         }
         getIntentAndLoad();
     }
 
-
-    // Allow user to sort list of medicines if they choose
+    /**
+     * Additional options to allow user to sort list of medicines if they choose
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -131,34 +167,41 @@ public class MedicineListActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //The onLoaded() method is called when the request is successful
+    /**
+     * onLoaded method called when the search request is successful. Alerts the user of the search
+     * results and kicks off the list population
+     *
+     * @param medicineList the modelled response returned by the API
+     */
     @Override
     public void onLoaded(List<Medicine> medicineList) {
         TextView noResults = (TextView) findViewById(R.id.no_results);
         if (medicineList.size() > 0) {
             MediApp.customToast("Found " + medicineList.size() + " results", MediApp.KEY_POSITIVE);
             noResults.setVisibility(View.GONE);
-        }
-        else
-        {
+        } else {
             noResults.setVisibility(View.VISIBLE);
-            noResults.setText(getString(R.string.no_results, query));
+            noResults.setText(getString(R.string.no_results, mSearchQery));
         }
 
-        medicinesResponse = medicineList;
+        mMedicinesResponse = medicineList;
         populateAndLoadList(ProfileMedicineListActivity.SORT_NAME);
     }
 
-    // Populate and load the list displaying medicines
+    /**
+     * Populates and loads the list displaying medicines
+     *
+     * @param sortType specifies a sort tag that can be specified by the user. Allows sorting by name or type
+     */
     private void populateAndLoadList(String sortType) {
         mMedicineMapList.clear();
         try {
-            medicinesResponse = (Medicine.sort(medicinesResponse, sortType));
+            mMedicinesResponse = (Medicine.sort(mMedicinesResponse, sortType));
         } catch (ParseException e) {
             Log.d("ProfileMedicineListAct", "A Parse Exception has occurred: " + e.getMessage());
         }
 
-        for (Medicine medicine : medicinesResponse) {
+        for (Medicine medicine : mMedicinesResponse) {
             HashMap<String, String> map = new HashMap<>();
             map.put(MedicineListActivity.KEY_ID, medicine.getMedicineId());
             map.put(MedicineListActivity.KEY_NAME, medicine.getMedicineName());
@@ -172,67 +215,47 @@ public class MedicineListActivity extends AppCompatActivity
         loadListView();
     }
 
-    // Called if there is an error when trying to query the API. For example, this could arise from
-    // a malformed URL which is not accepted by the API
+    /**
+     * Called if there is an error when trying to query the API. For example, this could arise from
+     * a malformed URL which is not accepted by the API
+     */
     @Override
     public void onError() {
         MediApp.customToast("No medicines found", MediApp.KEY_NEGATIVE);
     }
 
+    /**
+     * Handle user's clicking on a list item. Pass the selected Medicine's information into a Bundle
+     * to be handled in {@link MedicineDetailsActivity MedicineDetailsActivity}
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
         Bundle arguments = new Bundle();
-
         arguments.putString(UserDetailFragment.ARG_ITEM_ID, AWSProvider.getInstance().getIdentityManager().getCachedUserID());
-
         arguments.putString(KEY_NAME, mMedicineMapList.get(i).get(KEY_NAME));
         arguments.putString(KEY_TYPE, mMedicineMapList.get(i).get(KEY_TYPE));
         arguments.putString(KEY_ONSETACTION, mMedicineMapList.get(i).get(KEY_ONSETACTION));
         arguments.putString(KEY_ID, mMedicineMapList.get(i).get(KEY_ID));
         arguments.putString(KEY_IMAGEURL, mMedicineMapList.get(i).get(KEY_IMAGEURL));
         arguments.putString(KEY_CONFLICT, mMedicineMapList.get(i).get(KEY_CONFLICT));
-
         Context context = view.getContext();
         Intent intent = new Intent(context, MedicineDetailsActivity.class);
         intent.putExtras(arguments);
         context.startActivity(intent);
     }
 
+    /**
+     * Initialise the adapter which lists the medicines on the screen. Called whenever there is a
+     * change to the list, such as sorting
+     */
     private void loadListView() {
-
-        //The adapter which lists the medicines on the screen
-        adapter = new SimpleAdapter(
+        mSimpleAdapter = new SimpleAdapter(
                 MedicineListActivity.this,
                 mMedicineMapList,
                 R.layout.list_item,
                 new String[]{KEY_NAME, KEY_TYPE},
                 new int[]{R.id.name, R.id.type});
-        mListView.setAdapter(adapter);
+        mListView.setAdapter(mSimpleAdapter);
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    // Open the navigation bar when pressing the back button
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawers();
-        } else {
-            mDrawerLayout.openDrawer(GravityCompat.START);
-        }
-    }
-
-    // Add the addition action bar items based on the xml defined menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bar_menu_search_no_date, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
 }

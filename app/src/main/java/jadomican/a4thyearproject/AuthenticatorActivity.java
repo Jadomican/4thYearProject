@@ -1,6 +1,11 @@
 package jadomican.a4thyearproject;
 
-import android.app.ProgressDialog;
+/*
+ * Jason Domican
+ * Final Year Project
+ * Institute of Technology Tallaght
+ */
+
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -22,7 +27,10 @@ import com.amazonaws.mobile.auth.ui.SignInActivity;
 import jadomican.a4thyearproject.data.UserDetail;
 import jadomican.a4thyearproject.data.UserDetailsContentContract;
 
-
+/**
+ * Activity to handle user authentication. Creates a record in the database if a new user does not
+ * already have one
+ */
 public class AuthenticatorActivity extends AppCompatActivity {
 
     private UserDetail mItem;
@@ -30,20 +38,18 @@ public class AuthenticatorActivity extends AppCompatActivity {
 
     private ContentResolver contentResolver;
     private static final int QUERY_TOKEN = 1001;
-    private static final int UPDATE_TOKEN = 1002;
     private static final int INSERT_TOKEN = 1003;
     private Activity successfulSignInActivity;
     //private ProgressDialog dialog;
 
-
+    /**
+     * Sets up the AWS identity manager authentication dialogs and UI
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authenticator);
-//        dialog = new ProgressDialog(this);
-//        dialog.setMessage(getResources().getString(R.string.loading_sign_in));
-//        dialog.show();
-        Log.d("after dialog", "dialog");
+
         final IdentityManager identityManager = AWSProvider.getInstance().getIdentityManager();
         // Set up the callbacks to handle the authentication response
         identityManager.setUpToAuthenticate(this, new DefaultSignInResultHandler() {
@@ -56,7 +62,7 @@ public class AuthenticatorActivity extends AppCompatActivity {
 
             @Override
             public boolean onCancel(Activity activity) {
-                Log.d("ON CANCEL", "CANCEL");
+                Log.d("AuthenticatorActivity", "onCancel");
                 return false;
             }
         });
@@ -68,14 +74,16 @@ public class AuthenticatorActivity extends AppCompatActivity {
                 .fontFamily("sans-serif")
                 .build();
         SignInActivity.startSignInActivity(this, config);
-        //AuthenticatorActivity.this.finish();
     }
 
+    /**
+     * Determine whether or not a user exists in the database. Asynchronously query the backend
+     * database. Here a check is performed to see if the user is a brand new user to the app,
+     * i.e. they have no entry in the database. If this is thecase an insert is made to the database
+     * to store the users details
+     */
     private void syncUser() {
         contentResolver = getApplicationContext().getContentResolver();
-        // Asynchronously query the backend database. Here a check is performed to see if the user
-        // is a brand new user to the app, i.e. they have no entry in the database. If this is the
-        // case an insert is made to the database to store the users details
         AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
             @Override
             protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
@@ -95,6 +103,9 @@ public class AuthenticatorActivity extends AppCompatActivity {
         queryHandler.startQuery(QUERY_TOKEN, null, itemUri, UserDetailsContentContract.UserDetails.PROJECTION_ALL, null, null, null);
     }
 
+    /**
+     * Convert the user object to a database object and insert into the database
+     */
     private void saveData() {
         AsyncQueryHandler queryHandler = new AsyncQueryHandler(contentResolver) {
             @Override
@@ -109,15 +120,14 @@ public class AuthenticatorActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Proceed to the home screen after authentication
+     */
     private void goToMainActivity() {
-//        if (dialog.isShowing()) {
-//            dialog.dismiss();
-//        }
         MediApp.customToast(getResources().getString(R.string.logged_in), MediApp.KEY_POSITIVE);
         final Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         successfulSignInActivity.startActivity(intent);
         successfulSignInActivity.finish();
     }
-
 
 }
