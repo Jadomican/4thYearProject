@@ -23,4 +23,11 @@
         android:title="@string/sort_type"
         app:showAsAction="never"/>
 
+    <!-- Settings, always be in the overflow -->
+    <item
+        android:id="@+id/log_out"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/log_out"
+        app:showAsAction="never" />
+
 </menu>

@@ -60,6 +60,7 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
     // The medicine this page is representing
     private Medicine medicine;
     private TextView mMedicineNameDisplay;
+    private TextView mMedicineDescriptionDisplay;
     private Button mAddMedicineButton;
     private ProgressDialog mProgressDialog;
 
@@ -81,14 +82,14 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
             itemUri = UserDetailsContentContract.UserDetails.uriBuilder(itemId);
 
             //Populate the Medicine object based on the choice made by the user from the list
-            medicine = new Medicine(extras.getString(
-                    MedicineListActivity.KEY_ID),
-                    extras.getString(MedicineListActivity.KEY_NAME),
-                    extras.getString(MedicineListActivity.KEY_TYPE),
-                    extras.getString(MedicineListActivity.KEY_ONSETACTION),
-                    extras.getString(MedicineListActivity.KEY_IMAGEURL),
-                    extras.getString(MedicineListActivity.KEY_CONFLICT)
-            );
+            medicine = new Medicine();
+            medicine.setMedicineId(extras.getString(MedicineListActivity.KEY_ID));
+            medicine.setMedicineName(extras.getString(MedicineListActivity.KEY_NAME));
+            medicine.setMedicineType(extras.getString(MedicineListActivity.KEY_TYPE));
+            medicine.setMedicineOnsetAction(extras.getString(MedicineListActivity.KEY_ONSETACTION));
+            medicine.setMedicineImageUrl(extras.getString(MedicineListActivity.KEY_IMAGEURL));
+            medicine.setMedicineConflict(extras.getString(MedicineListActivity.KEY_CONFLICT));
+            medicine.setDescription(extras.getString(MedicineListActivity.KEY_DESCRIPTION));
             actionBar.setTitle(getString(R.string.medicine_name, medicine.getMedicineName()));
             syncUser();
             setImage();
@@ -101,7 +102,8 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
                 saveData(v);
             }
         });
-        mMedicineNameDisplay = (TextView) findViewById(R.id.medicineNameDisplay);
+        mMedicineNameDisplay = (TextView) findViewById(R.id.medicine_name_display);
+        mMedicineDescriptionDisplay = (TextView) findViewById(R.id.medicine_description);
 
         setTouchListener(mMedicineNameDisplay, medicine.getMedicineName());
 
@@ -178,8 +180,11 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
+            mMedicineNameDisplay.setVisibility(View.VISIBLE);
             mAddMedicineButton.setVisibility(View.VISIBLE);
             mMedicineNameDisplay.setVisibility(View.VISIBLE);
+            mMedicineDescriptionDisplay.setVisibility(View.VISIBLE);
+            bmImage.setVisibility(View.VISIBLE);
             bmImage.setImageBitmap(result);
             if (mProgressDialog.isShowing()) {
                 mProgressDialog.dismiss();
@@ -202,6 +207,7 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
      */
     private void setAssets() {
         mMedicineNameDisplay.setText(medicine.getMedicineName());
+        mMedicineDescriptionDisplay.setText(medicine.getDescription());
         String buttonText = getString(R.string.button_add_medicine);
         boolean alreadyAdded = false;
         for (Medicine addedMedicine : mItem.getAddedMedicines()) {

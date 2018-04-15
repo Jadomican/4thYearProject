@@ -6,76 +6,88 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:paddingTop="@dimen/toolbar_margin"
-    android:paddingStart="@dimen/activity_horizontal_margin"
     android:paddingEnd="@dimen/activity_horizontal_margin"
-
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/toolbar_margin"
     tools:context=".UserDetailFragment">
 
-    <LinearLayout
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_first_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/profile_first_name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="?attr/editTextColor" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_last_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/profile_surname"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_dob"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:hint="@string/profile_dob"
-                android:inputType="date"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_bio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/profile_bio"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-        </android.support.design.widget.TextInputLayout>
-
-
-        <Button
-            android:id="@+id/update_profile_button"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/button_update_profile" />
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_first_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/profile_first_name"
+                    android:imeOptions="actionNext|flagNoExtractUi"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?attr/editTextColor" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_last_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/profile_surname"
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_dob"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:hint="@string/profile_dob"
+                    android:imeOptions="actionNext"
+                    android:inputType="date"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_bio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/profile_bio"
+                    android:imeOptions="actionDone|flagNoExtractUi"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/update_profile_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/button_update_profile" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

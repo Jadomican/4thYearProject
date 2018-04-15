@@ -91,13 +91,13 @@ public class ProfileMedicineListActivity extends BaseAppCompatActivity
         SwipeMenuCreator creator = new SwipeMenuCreator() {
             @Override
             public void create(SwipeMenu menu) {
-                // Swipe "More" item
+                // Swipe "Conflicts" item
                 SwipeMenuItem moreInfoItem = new SwipeMenuItem(
                         getApplicationContext());
                 // Set BG colour
                 moreInfoItem.setBackground(new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.mediBlue)));
                 moreInfoItem.setWidth(170);
-                moreInfoItem.setTitle("More");
+                moreInfoItem.setTitle(getString(R.string.conflicts));
                 moreInfoItem.setTitleSize(18);
                 moreInfoItem.setTitleColor(Color.WHITE);
                 // Add item to the menu

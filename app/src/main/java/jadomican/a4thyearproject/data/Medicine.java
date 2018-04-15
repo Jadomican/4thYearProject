@@ -32,7 +32,11 @@ public class Medicine implements Serializable {
     private String imageurl;
     private String conflict;
     private String date;
+    private String description;
 
+    /**
+     * Default constructor for a Medicine object
+     */
     public Medicine() {
     }
 
@@ -67,6 +71,14 @@ public class Medicine implements Serializable {
 
     public void setMedicineDate(String date) {
         this.date = date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getMedicineId() {

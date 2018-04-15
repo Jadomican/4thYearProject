@@ -12,24 +12,25 @@
         android:id="@+id/activity_medicine_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/gradient_background"
         tools:context="jadomican.a4thyearproject.MedicineListActivity">
 
-        <include layout="@layout/toolbar"/>
+        <include layout="@layout/toolbar" />
 
         <ListView
             android:id="@+id/list_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"/>
+            android:layout_below="@id/toolbar" />
 
         <TextView
             android:id="@+id/no_results"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:gravity="center"
             android:text="@string/no_results"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
 
     </RelativeLayout>

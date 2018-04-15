@@ -201,6 +201,7 @@ public class MediApp extends Application {
             }
 
         } catch (JSONException e) {
+            // In case of an JSON Exception, log the error and return an empty list
             Log.d("MediApp", "A JSONException has occurred: " + e.toString());
         }
         return listMedicines;

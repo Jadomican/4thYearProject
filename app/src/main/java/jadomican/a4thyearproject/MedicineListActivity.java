@@ -60,6 +60,7 @@ public class MedicineListActivity extends BaseAppCompatActivity
     public static final String KEY_ONSETACTION = "onsetaction";
     public static final String KEY_IMAGEURL = "imageurl";
     public static final String KEY_CONFLICT = "conflict";
+    public static final String KEY_DESCRIPTION= "description";
     public static final String KEY_QUERY = "query";
     public static final String KEY_DATE = "date";
 
@@ -209,6 +210,8 @@ public class MedicineListActivity extends BaseAppCompatActivity
             map.put(MedicineListActivity.KEY_ONSETACTION, medicine.getMedicineOnsetAction());
             map.put(MedicineListActivity.KEY_IMAGEURL, medicine.getMedicineImageUrl());
             map.put(MedicineListActivity.KEY_CONFLICT, medicine.getMedicineConflict());
+            map.put(MedicineListActivity.KEY_DESCRIPTION, medicine.getDescription());
+
             //For each medicine, add to list
             mMedicineMapList.add(map);
         }
@@ -239,6 +242,8 @@ public class MedicineListActivity extends BaseAppCompatActivity
         arguments.putString(KEY_ID, mMedicineMapList.get(i).get(KEY_ID));
         arguments.putString(KEY_IMAGEURL, mMedicineMapList.get(i).get(KEY_IMAGEURL));
         arguments.putString(KEY_CONFLICT, mMedicineMapList.get(i).get(KEY_CONFLICT));
+        arguments.putString(KEY_DESCRIPTION, mMedicineMapList.get(i).get(KEY_DESCRIPTION));
+
         Context context = view.getContext();
         Intent intent = new Intent(context, MedicineDetailsActivity.class);
         intent.putExtras(arguments);

@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import com.amazonaws.mobile.auth.core.IdentityManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -229,6 +230,16 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 MediApp.displayDialog(this,
                         getString(R.string.bar_camera_help_title),
                         getString(R.string.bar_camera_help_message));
+                return true;
+            case R.id.log_out:
+                IdentityManager id = AWSProvider.getInstance().getIdentityManager();
+                id.signOut();
+                Context context = getApplicationContext();
+                Intent intent = new Intent(context, AuthenticatorActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                context.startActivity(intent);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

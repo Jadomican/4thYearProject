@@ -45,7 +45,8 @@
             android:label="@string/title_home"
             android:theme="@style/AppTheme.NoActionBar">
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />
 
         </activity>
@@ -55,51 +56,58 @@
             android:label="@string/title_user_detail"
             android:theme="@style/AppTheme.NoActionBar">
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />
 
         </activity>
         <activity
             android:name=".MedicineListActivity"
-            android:launchMode="singleTop"
             android:label="@string/title_medicine_list"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />
 
         </activity>
         <activity
             android:name=".MedicineDetailsActivity"
-            android:parentActivityName=".MedicineListActivity"
             android:label="@string/title_medicine_list"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:parentActivityName=".MedicineListActivity">
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />
 
         </activity>
         <activity
             android:name=".OcrCaptureActivity"
             android:label="Read Text"
-            android:theme="@style/CamTheme"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/CamTheme">
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />
 
         </activity>
-        <activity android:name=".ProfileMedicineListActivity"
+        <activity
+            android:name=".ProfileMedicineListActivity"
             android:label="@string/your_profile_medicines"
             android:theme="@style/AppTheme.NoActionBar">
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".MedicineListActivity" />
 
         </activity>

@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_background">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -27,10 +28,13 @@
                 android:layout_below="@id/toolbar"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="4dp"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true"
+                android:background="@android:color/black"
+                android:padding="1dp"
+                android:visibility="invisible"/>
 
             <TextView
-                android:id="@+id/medicineNameDisplay"
+                android:id="@+id/medicine_name_display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageDisplay"
@@ -44,6 +48,15 @@
                 android:drawableRight="@drawable/ic_speak"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/medicine_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/medicine_name_display"
+                android:layout_centerInParent="true"
+                android:padding="20dp"
                 android:visibility="invisible"/>
 
             <Button
@@ -51,7 +64,7 @@
                 style="@android:style/Widget.Holo.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/medicineNameDisplay"
+                android:layout_below="@id/medicine_description"
                 android:layout_centerInParent="true"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
@@ -60,7 +73,7 @@
                 android:adjustViewBounds="false"
                 android:onClick="saveData"
                 android:text="@string/button_add_medicine"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
