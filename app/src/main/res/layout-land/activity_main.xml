@@ -16,7 +16,7 @@
         android:background="@drawable/gradient_background"
         tools:context="jadomican.a4thyearproject.MainActivity">
 
-        <include layout="@layout/toolbar"/>
+        <include layout="@layout/toolbar" />
 
         <TextView
             android:id="@+id/welcome_app"
@@ -93,7 +93,6 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

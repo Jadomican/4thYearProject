@@ -17,6 +17,5 @@
         android:icon="@drawable/ic_action_settings"
         android:title="@string/log_out"
         app:showAsAction="never" />
-    <!-- Settings, always be in the overflow -->
 
 </menu>

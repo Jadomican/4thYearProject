@@ -1,6 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Layout for the toolbar menu in the Search Results screen -->
     <item
         android:id="@+id/action_help"
         android:icon="@drawable/ic_action_help"
@@ -10,18 +11,20 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
         android:title="@string/button_search_medicines"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <!-- Settings, always in the overflow -->
-    <item android:id="@+id/action_sort_name"
+    <item
+        android:id="@+id/action_sort_name"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/sort_name"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
-    <item android:id="@+id/action_sort_type"
+    <item
+        android:id="@+id/action_sort_type"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/sort_type"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <!-- Settings, always be in the overflow -->
     <item
