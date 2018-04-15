@@ -148,8 +148,9 @@ public class ProfileMedicineListActivity extends BaseAppCompatActivity
                         };
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ProfileMedicineListActivity.this);
-                        builder.setMessage("Delete " + medicineToDelete + "?").setPositiveButton("Yes", dialogClickListener)
-                                .setNegativeButton("No", dialogClickListener).show();
+                        builder.setMessage(getString(R.string.delete_medicine, medicineToDelete))
+                                .setPositiveButton(getString(R.string.yes), dialogClickListener)
+                                .setNegativeButton(getString(R.string.no), dialogClickListener).show();
                         break;
                 }
                 // Return false - close the menu

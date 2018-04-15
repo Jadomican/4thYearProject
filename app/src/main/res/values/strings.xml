@@ -61,7 +61,12 @@
     <string name="bar_medicine_search_help_title">Medicine Search Results</string>
     <string name="bar_medicine_search_help_message">Your search results will appear here. If you want to search again, just tap on the Search icon and enter your term. Results can also be sorted by name or type.</string>
     <string name="bar_medicine_info_help_title">%1$s Information</string>
-    <string name="bar_medicine_info_help_message">Here you will find information about %1$s. You can add %1$s to your profile at any time by selecting \'Add Medicine to Profile\'</string>
+    <string name="bar_medicine_info_help_message">Here you will find information about %1$s. You can add %1$s to your profile at any time by selecting \'Add Medicine to Profile\'. Select the speaker icon to hear more about %1$s.</string>
     <string name="conflicts">Conflicts</string>
+    <string name="conflict_detected">There may be a conflict between %1$s and a medicine in your profile. Do you still want to add %1$s?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="delete_medicine">Delete %1$s?</string>
+
 
 </resources>

@@ -78,6 +78,12 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * The Base method for handling users clicking various toolbar options. Although not all of these
+     * options are available in all activities, they are still all declared here in the base class
+     *
+     * @param item The toolbar menu item selected by the user
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -102,7 +108,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
                         getHelpTitle(),
                         getHelpMessage());
                 return true;
-
             case R.id.action_back:
                 super.onBackPressed();
                 return true;
@@ -118,14 +123,28 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    // Getters to allow subclasses to pass their Activity specific resources to this base class
+    /**
+     * Getter to a allow a subclass to pass its Activity-specific layout id to the base class for initialisation
+     */
     protected abstract int getLayoutResourceId();
 
+    /**
+     * Getter to allow a subclass to return its menu resource id for initialisation in the base class
+     */
     protected abstract int getMenuResourceId();
 
+    /**
+     * Getter allowing a subclass to return the id of a menu item they have selected
+     */
     protected abstract int getMenuItemResourceId();
 
+    /**
+     * Allow a subclass to return its Activity specific 'help' title, used if a user taps on the help button
+     */
     protected abstract String getHelpTitle();
 
+    /**
+     * Allow a subclass to return its Activity specific 'help' message, used if a user taps on the help button
+     */
     protected abstract String getHelpMessage();
 }

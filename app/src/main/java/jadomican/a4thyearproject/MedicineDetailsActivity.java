@@ -6,10 +6,12 @@ package jadomican.a4thyearproject;
  * Institute of Technology Tallaght
  */
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -63,6 +65,8 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
     private TextView mMedicineDescriptionDisplay;
     private Button mAddMedicineButton;
     private ProgressDialog mProgressDialog;
+    private boolean mIsConflict;
+    private boolean mIsAlreadyAdded;
 
     /**
      * Override the base class onCreate method with Activity specific code
@@ -97,15 +101,41 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
 
         mAddMedicineButton = (Button) findViewById(R.id.addMedicineButton);
         mAddMedicineButton.setOnClickListener(new View.OnClickListener() {
+
+            /**
+             * If there is a conflict with a medicine which is not already in the user's profile,
+             * confirm that the user wants to add this to their profile.
+             */
             @Override
-            public void onClick(View v) {
-                saveData(v);
+            public void onClick(final View v) {
+                if (mIsConflict && !mIsAlreadyAdded) {
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    saveData(v);
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MedicineDetailsActivity.this);
+                    builder.setMessage(getString(R.string.conflict_detected, medicine.getMedicineName()))
+                            .setPositiveButton(getString(R.string.yes), dialogClickListener)
+                            .setNegativeButton(getString(R.string.no), dialogClickListener).show();
+                } else {
+                    saveData(v);
+                }
             }
         });
         mMedicineNameDisplay = (TextView) findViewById(R.id.medicine_name_display);
         mMedicineDescriptionDisplay = (TextView) findViewById(R.id.medicine_description);
 
-        setTouchListener(mMedicineNameDisplay, medicine.getMedicineName());
+        setTouchListener(mMedicineNameDisplay, medicine.getMedicineName() + ". " + medicine.getDescription());
 
         // Set up the Text to Speech listener
         TextToSpeech.OnInitListener listener =
@@ -209,19 +239,24 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
         mMedicineNameDisplay.setText(medicine.getMedicineName());
         mMedicineDescriptionDisplay.setText(medicine.getDescription());
         String buttonText = getString(R.string.button_add_medicine);
-        boolean alreadyAdded = false;
         for (Medicine addedMedicine : mItem.getAddedMedicines()) {
 
-            // If the medicine already exists, inform the user
+            // If the medicine already exists or there is a conflict, inform the user
             if (addedMedicine.getMedicineName().equals(medicine.getMedicineName())) {
                 buttonText = getString(R.string.medicine_added, medicine.getMedicineName());
                 //getColor is deprecated as of API 23, use ContextCompat instead
                 mAddMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.mediBlue));
-                alreadyAdded = true;
-            } else if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()) && !alreadyAdded) {
-                buttonText = getString(R.string.button_medicine_conflict);
-                //getColor is deprecated as of API 23, use ContextCompat instead
+                mAddMedicineButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                mIsAlreadyAdded = true;
+
+            } else if (addedMedicine.getMedicineConflict().contains(medicine.getMedicineName()) && !mIsAlreadyAdded) {
+                buttonText = getString(R.string.button_add_medicine);
+                mIsConflict = true;
+
+                // getColor is deprecated as of API 23, use ContextCompat.getColor instead
+                // Update the UI to inform the user that there is a potential conflict between an this medicine and an added medicine
                 mAddMedicineButton.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.danger));
+                mAddMedicineButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_warning, 0);
             }
         }
         mAddMedicineButton.setText(buttonText);
@@ -307,7 +342,8 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
 
 
     /**
-     * Set a listener for the text-to-speech icon
+     * Set a listener for the text-to-speech icon. Tapping the speaker icon while the device is speaking
+     * will stop the device talking
      */
     public void setTouchListener(final TextView textView, final String wordsToSay) {
         // noinspection AndroidLintClickableViewAccessibility
@@ -316,11 +352,13 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 // DrawableRight is index value 2 for the getCompoundDrawables method
                 final int DRAWABLE_RIGHT = 2;
-
                 // If user presses down (taps) on icon
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (event.getRawX() >= (mMedicineNameDisplay.getRight() - mMedicineNameDisplay.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        if (wordsToSay != null) {
+                        // Stop TTS talking if it is already speaking
+                        if (tts.isSpeaking()) {
+                            tts.stop();
+                        } else if (wordsToSay != null) {
                             tts.speak(wordsToSay, TextToSpeech.QUEUE_ADD, null, "DEFAULT");
                         }
                         return true;
@@ -338,5 +376,17 @@ public class MedicineDetailsActivity extends BaseAppCompatActivity {
     public void onBackPressed() {
         super.onBackDeviceButtonPressed();
     }
+
+    /**
+     * Turn off TTS when leaving the medicine information screen
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (tts.isSpeaking()) {
+            tts.stop();
+        }
+    }
+
 
 }
